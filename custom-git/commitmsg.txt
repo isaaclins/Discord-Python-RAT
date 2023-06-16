@@ -1,1 +1,1 @@
-push 
+removed all boilerplate in style.css 
