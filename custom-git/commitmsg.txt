@@ -1,1 +1,1 @@
-push 
+deleted unnecessary scripts, starting new 
