@@ -1,1 +1,1 @@
-im stupid. the settings must be in python 
+push 
