@@ -1,1 +1,1 @@
-added req.txt 
+added settings.txt 
