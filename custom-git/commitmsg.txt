@@ -1,1 +1,1 @@
-added settings.txt 
+im stupid. the settings must be in python 
