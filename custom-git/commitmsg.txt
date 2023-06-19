@@ -1,1 +1,1 @@
-push 
+changed the commit.bat 
