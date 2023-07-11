@@ -10,11 +10,6 @@ channel_ids = {
 }
 
 
-software_registry_name = 'GTA 5'   # ---------------------------------------------- Software name shown in registry
-software_directory_name = software_registry_name   # ------------------------------ Directory (containing software executable) located in "C:\Program Files"
-software_executable_name = software_registry_name.replace(' ', '') + '.exe'
-
-
 
 
 @client.event 
