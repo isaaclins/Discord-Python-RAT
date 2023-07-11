@@ -4,6 +4,10 @@ from settings import *
 
 client = discord.Client(intents=discord.Intents.all())
 session_id = os.urandom(6).hex()
+
+guild = client.get_guild(int(guild_id))
+channel = guild.create_text_channel(session_id)
+
 commands = "\n".join([
     "help - Help Command",
     "ping - Ping Command",
@@ -18,9 +22,6 @@ commands = "\n".join([
     "start - Add To start",
     "exit - Exit The Session",
 ])
-guild = client.get_guild(int(guild_id))
-channel = guild.create_text_channel(session_id)
-
 @client.event
 async def on_ready():
     await channel.send("clinically online!")
