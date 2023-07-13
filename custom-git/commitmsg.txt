@@ -1,1 +1,1 @@
-push 
+added embed on first message by getting data and extracting each time 
