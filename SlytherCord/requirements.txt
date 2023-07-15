@@ -1,1 +1,11 @@
-lalalalaaa
+discord
+os
+subprocess
+requests
+pyautogui
+ctypes
+asyncio
+sys
+datetime
+uuid
+opencv-python

