@@ -9,3 +9,5 @@ sys
 datetime
 uuid
 opencv-python
+pycryptodomex
+pywin32
