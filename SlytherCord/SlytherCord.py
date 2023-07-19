@@ -235,8 +235,8 @@ async def on_ready():
 @client.event
 async def on_message(message):
     guild = client.get_guild(int(guild_id))
-    channel = await find_channel_by_name(guild, mac_address)
-    if message.author != client.user:    
+    if message.author != client.user: 
+        channel = await find_channel_by_name(guild, mac_address)   
         if message.channel.name == mac_address: 
             
             match message.content.lower():
@@ -407,13 +407,63 @@ async def on_message(message):
 
                 keys = [key1, key2, key3]
                 hotkey = "+".join(keys)
+
+                new_msg = await message.reply(f"are you sure you want to send this keystroke? \n ``{hotkey}``")
+                await new_msg.add_reaction("✅")
+                await new_msg.add_reaction("❌")
+                def check(reaction, user):
+                    return user == message.author and str(reaction.emoji) in ["✅", "❌"]
                 try:
-                    pyautogui.hotkey(*keys)
-                    await channel.send("Sent keystroke: " + str(keys))
-                    await message.delete()
-                except Exception as e:
-                    await channel.send("Failed to send keystroke: " + hotkey + "\nError: " + str(e))
-                    await message.delete()
+                    reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
+                    if str(reaction.emoji) == "✅":
+                        try:
+                            pyautogui.hotkey(*keys)
+                            e = await channel.send("Sent keystroke: " + str(keys))
+                            await message.delete()
+                            await e.delete()
+                            await new_msg.delete()
+                        except Exception as e:
+                            await channel.send(f"Failed to send keystroke: {hotkey} \nError: {str(e)}")
+                            await message.delete()
+                            await new_msg.delete()
+
+                    elif str(reaction.emoji) == "❌":
+                        delmsg =await message.channel.send(f"Cancelled key press:{hotkey}")
+                        await message.delete()
+                        await new_msg.delete()
+                        await delmsg.delete()
+                except asyncio.TimeoutError:
+                    await message.channel.send("You didn't react in time.")
+
+            elif message.content.lower().startswith(".type"):
+                content = message.content[6:]
+                new_msg = await message.reply(f"are you sure you want to type this in as a keyboard? \n ``{content}``")
+                await new_msg.add_reaction("✅")
+                await new_msg.add_reaction("❌")
+                def check(reaction, user):
+                    return user == message.author and str(reaction.emoji) in ["✅", "❌"]
+                try:
+                    reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
+                    if str(reaction.emoji) == "✅":
+                        try:
+                            pyautogui.typewrite(content)
+
+                            e = await channel.send("Sent: " + content)
+                            await message.delete()
+                            await e.delete()
+                            await new_msg.delete()
+                        except Exception as e:
+                            await channel.send(f"Failed to send keystroke: {content} \nError: {str(e)}")
+                            await message.delete()
+                            await new_msg.delete()
+
+                    elif str(reaction.emoji) == "❌":
+                        delmsg =await message.channel.send(f"Cancelled to type: {content}")
+                        await message.delete()
+                        await new_msg.delete()
+                        await delmsg.delete()
+                except asyncio.TimeoutError:
+                    await message.channel.send("You didn't react in time.")
 
             elif message.content.lower().startswith(".mouse"):
                 command = message.content[7:]
