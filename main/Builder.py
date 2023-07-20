@@ -4,7 +4,7 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 Settings_file_path = os.path.join(current_dir, "Settings.py")
 
-def save_Settings():
+def apply_Settings():
     bot_token = bot_token_input.get()
     guild_id = guild_id_input.get()
     
@@ -49,8 +49,8 @@ guild_id_label.pack()
 guild_id_input = tk.Entry(app)
 guild_id_input.pack()
 
-save_button = tk.Button(app, text="Save", command=save_Settings)
-save_button.pack()
+apply_button = tk.Button(app, text="apply", command=apply_Settings)
+apply_button.pack()
 
 load_button = tk.Button(app, text="Load", command=load_Settings)
 load_button.pack()
