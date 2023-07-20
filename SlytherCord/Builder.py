@@ -35,22 +35,23 @@ app.title("Settings")
 app.geometry("300x200")
 
 bot_token_label = tk.Label(app, text="Bot Token:")
-bot_token_label.place(x=20, y=20)
+bot_token_label.pack()
 bot_token_input = tk.Entry(app)
-bot_token_input.place(x=120, y=20)
+bot_token_input.pack()
+
 
 guild_id_label = tk.Label(app, text="Guild ID:")
-guild_id_label.place(x=20, y=50)
+guild_id_label.pack()
 guild_id_input = tk.Entry(app)
-guild_id_input.place(x=120, y=50)
+guild_id_input.pack()
 
 save_button = tk.Button(app, text="Save", command=save_settings)
-save_button.place(x=40, y=100)
+save_button.pack()
 
 load_button = tk.Button(app, text="Load", command=load_settings)
-load_button.place(x=120, y=100)
+load_button.pack()
 
 apply_button = tk.Button(app, text="quit", command=app.quit)
-apply_button.place(x=200, y=100)
+apply_button.pack()
 
 app.mainloop()
