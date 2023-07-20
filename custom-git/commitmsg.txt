@@ -1,1 +1,1 @@
-replaced .place(x,y) with .pack  
+push 
