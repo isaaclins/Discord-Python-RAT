@@ -1,1 +1,1 @@
-rechanged the builder.py, still working on it 
+changed the builder.py to tkinter, simpler build. 
