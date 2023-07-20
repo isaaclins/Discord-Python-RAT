@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
+current_dir = os.path.dirname(os.path.abspath(__file__))
+Settings_file_path = os.path.join(current_dir, "Settings.py")
 
 def save_Settings():
     bot_token = bot_token_input.get()
     guild_id = guild_id_input.get()
     
     # Get the directory path of the current script
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    Settings_file_path = os.path.join(current_dir, "Settings.py")
 
     with open(Settings_file_path, "w") as file:
         file.write(f"bot_token = '{bot_token}'\n")
@@ -17,7 +17,7 @@ def save_Settings():
 
 def load_Settings():
     try:
-        with open("Settings.py", "r") as file:
+        with open(Settings_file_path, "r") as file:
             Settings = file.readlines()
 
         for line in Settings:
