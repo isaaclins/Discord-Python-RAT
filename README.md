@@ -88,7 +88,37 @@ Displays a list of available commands with their descriptions.
 
 **Example:**
 ```
-.help
+YOU>.help
+CLIENT>
+.help               - Shows this message
+.ping               - Latency delay of the bot
+.cd <directory>     - Change Directory
+.ls                 - List Directory
+.export <file>      - Export File into link
+.upload <link>      - Upload File from link
+.cmd <cmd>          - Execute CMD Command
+.run <file>         - Run a File
+.ss                 - Take a Screenshot of the first monitor
+.blue               - Sends a bluescreen ;)
+.start              - Adds the bot to the startup directory
+.exit               - Closes the connection to the bot
+.reload             - Reloads the connection to the bot
+.volumeup           - Increase the system volume
+.volumedown         - Decrease the system volume
+.admincheck         - Check admin privileges
+.location           - Get location information
+.clipboard          - Get clipboard content
+.wallpaper          - Change wallpaper
+.export             - Export file into link
+.upload             - Upload file from link
+.shell              - Execute shell command
+.run                - Run command
+.cd                 - Change directory
+.input              - Send keystrokes
+.type               - Type text
+.say                - Text to speech
+.message            - Display message box
+.mouse              - Display mouse grid
 ```
 
 ### .ping<a name="ping"></a>
@@ -97,7 +127,10 @@ Shows the latency delay of the bot in milliseconds.
 
 **Example:**
 ```
-.ping
+YOU>.ping
+CLIENT>
+Pong!
+jk here's the latency: 203ms
 ```
 
 ### .cd \<directory\><a name="change-directory"></a>
@@ -106,7 +139,9 @@ Change the current working directory.
 
 **Example:**
 ```
-.cd C:\Users\Username\Documents
+YOU>.cd C:\Users\Username\Documents
+CLIENT>
+Changed Directory > C:\Users\Username\Documents
 ```
 
 ### .ls<a name="list-directory"></a>
@@ -115,7 +150,11 @@ List files in the current directory.
 
 **Example:**
 ```
-.ls
+YOU>.ls
+CLIENT>
+Files > C:\Users\Username\Documents
+file1.txt
+file2.doc
 ```
 
 ### .export \<file\><a name="export-file-into-link"></a>
@@ -124,7 +163,10 @@ Export a file and provide a link.
 
 **Example:**
 ```
-.export example.txt
+YOU>.export example.txt
+CLIENT>
+Export
+https://example.com/file.txt
 ```
 
 ### .upload \<link\><a name="upload-file-from-link"></a>
@@ -133,7 +175,10 @@ Upload a file from a provided link.
 
 **Example:**
 ```
-.upload https://example.com/file.txt
+YOU>.upload https://example.com/file.txt
+CLIENT>
+Uploaded file in current directory:
+C:/example/directory/example.txt
 ```
 
 ### .cmd \<cmd\><a name="execute-cmd-command"></a>
@@ -142,7 +187,11 @@ Execute a command using CMD.
 
 **Example:**
 ```
-.cmd ipconfig
+YOU>.cmd ipconfig
+CLIENT>
+CMD Output:
+Windows IP Configuration
+...
 ```
 
 ### .run \<file\><a name="run-a-file"></a>
@@ -153,14 +202,16 @@ Run an executable file.
 ```
 .run program.exe
 ```
-
+(no output)
 ### .ss<a name="take-a-screenshot-of-the-first-monitor"></a>
 
 Take a screenshot of the first monitor.
 
 **Example:**
 ```
-.ss
+YOU>.ss
+CLIENT>
+(Screenshot of Desktop)
 ```
 
 ### .blue<a name="send-a-bluescreen"></a>
@@ -169,7 +220,10 @@ Trigger a bluescreen on the system.
 
 **Example:**
 ```
-.blue
+YOU>.blue
+CLIENT>
+Attempting...
+Blue Successful!
 ```
 
 ### .start<a name="add-the-bot-to-the-startup-directory"></a>
@@ -178,7 +232,9 @@ Add the bot to the system's startup directory.
 
 **Example:**
 ```
-.start
+YOU>.start
+CLIENT>
+Bot added to startup directory
 ```
 
 ### .exit<a name="close-the-connection-to-the-bot"></a>
@@ -187,7 +243,9 @@ Close the connection to the bot.
 
 **Example:**
 ```
-.exit
+YOU>.exit
+CLIENT>
+Connection closed
 ```
 
 ### .reload<a name="reload-the-connection-to-the-bot"></a>
@@ -196,7 +254,10 @@ Reload the connection to the bot.
 
 **Example:**
 ```
-.reload
+YOU>.reload
+CLIENT>
+Reloading, please be patient...
+Connection reloaded
 ```
 
 ### .volumeup<a name="increase-the-volume"></a>
@@ -205,7 +266,9 @@ Increase the system volume to 100%.
 
 **Example:**
 ```
-.volumeup
+YOU>.volumeup
+CLIENT>
+Volume is set to 100%
 ```
 
 ### .volumedown<a name="decrease-the-volume"></a>
@@ -214,7 +277,9 @@ Decrease the system volume to 0%.
 
 **Example:**
 ```
-.volumedown
+YOU>.volumedown
+CLIENT>
+Volume is set to 0%
 ```
 
 ### .admincheck<a name="check-admin-privileges"></a>
@@ -223,7 +288,9 @@ Check if the bot has admin privileges.
 
 **Example:**
 ```
-.admincheck
+YOU>.admincheck
+CLIENT>
+Congrats, you're admin
 ```
 
 ### .location<a name="get-location-information"></a>
@@ -232,7 +299,9 @@ Get the current geolocation information.
 
 **Example:**
 ```
-.location
+YOU>.location
+CLIENT>
+Location: http://www.google.com/maps/place/latitude,longitude
 ```
 
 ### .clipboard<a name="get-clipboard-content"></a>
@@ -241,7 +310,10 @@ Get the content of the system clipboard.
 
 **Example:**
 ```
-.clipboard
+YOU>.clipboard
+CLIENT>
+Clipboard content is:
+This is clipboard text
 ```
 
 ### .wallpaper<a name="change-wallpaper"></a>
@@ -250,7 +322,9 @@ Change the system wallpaper.
 
 **Example:**
 ```
-.wallpaper
+YOU>.wallpaper <attached image>
+CLIENT>
+Changed wallpaper
 ```
 
 ### .input<a name="send-keystrokes"></a>
@@ -259,7 +333,9 @@ Send a combination of keystrokes.
 
 **Example:**
 ```
-.input Ctrl Alt Delete
+YOU>.input Ctrl Alt Delete
+CLIENT>
+Sent keystroke: Ctrl+Alt+Delete
 ```
 
 ### .type<a name="type-text"></a>
@@ -268,7 +344,9 @@ Type specified text as if it were typed by a keyboard.
 
 **Example:**
 ```
-.type Hello, Discord!
+YOU>.type Hello, World!
+CLIENT>
+Sent: Hello, World!
 ```
 
 ### .say<a name="text-to-speech"></a>
@@ -277,7 +355,9 @@ Convert text to speech and play it.
 
 **Example:**
 ```
-.say Hello, Discord!
+YOU>.say Hello, how are you?
+CLIENT>
+Just said: Hello, how are you?
 ```
 ### .shell<a name="execute-shell-command"></a>
 
@@ -286,6 +366,8 @@ Execute a shell command on the system.
 **Example:**
 ```
 .shell dir
+CLIENT>
+(shell output)
 ```
 
 ### .run<a name="run-command"></a>
@@ -295,18 +377,13 @@ Run a command on the system using subprocess.
 **Example:**
 ```
 .run notepad.exe
+(no output)
 ```
 
-Thank you for pointing that out, and I appreciate your understanding. If you have any more questions or need further clarification, feel free to ask!
-
+# ⚠ WIP ⚠: 
 ### .message<a name="display-message-box"></a>
 
 Display a message box on the system.
-
-**Example:**
-```
-.message This is an important message!
-```
 
 ### .mouse<a name="display-mouse-grid"></a>
 
@@ -320,7 +397,3 @@ Display a grid on the screen to help locate the mouse pointer.
 **Note:** The `large` argument specifies the size of
 
  the grid (`large`, `medium`, `small`, `tiny`).
-
-## Conclusion
-
-This documentation provides an overview of the Discord Python RAT and its available features. It is important to use these functionalities responsibly and in compliance with relevant laws and regulations. Always ensure that you have appropriate authorization before remotely administering systems.
