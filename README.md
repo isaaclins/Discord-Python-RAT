@@ -421,5 +421,6 @@ When contributing, please adhere to the following guidelines:
 - Ensure your changes do not break existing functionality.
 - Use common sense to make decisions that contribute to the overall improvement of the project.
 
-Thank you for considering contributing to our project! Your efforts help make this project better for everyone.
+Thank you for considering contributing to our project! Your efforts help make this project better for everyone. ♥♥♥
+Ill try to give you credits for what you did and how it helped in the project!
  
