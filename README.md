@@ -16,69 +16,36 @@ The Discord Python RAT (Remote Administration Tool) is a project designed to pro
 
 1. [Command List](#command-list)
 2. [Modules](#modules)
-   - [.help](#help)
-   - [.ping](#ping)
-   - [.cd \<directory\>](#change-directory)
-   - [.ls](#list-directory)
-   - [.export \<file\>](#export-file-into-link)
-   - [.upload \<link\>](#upload-file-from-link)
-   - [.cmd \<cmd\>](#execute-cmd-command)
-   - [.run \<file\>](#run-a-file)
-   - [.ss](#take-a-screenshot-of-the-first-monitor)
-   - [.blue](#send-a-bluescreen)
-   - [.start](#add-the-bot-to-the-startup-directory)
-   - [.exit](#close-the-connection-to-the-bot)
-   - [.reload](#reload-the-connection-to-the-bot)
-   - [.volumeup](#increase-the-volume)
-   - [.volumedown](#decrease-the-volume)
-   - [.admincheck](#check-admin-privileges)
-   - [.location](#get-location-information)
-   - [.clipboard](#get-clipboard-content)
-   - [.wallpaper](#change-wallpaper)
-   - [.export](#export-file-into-link)
-   - [.upload](#upload-file-from-link)
-   - [.shell](#execute-shell-command)
-   - [.run](#run-command)
-   - [.cd](#change-directory)
-   - [.input](#send-keystrokes)
-   - [.type](#type-text)
-   - [.say](#text-to-speech)
-   - [.message](#display-message-box)
-   - [.mouse](#display-mouse-grid)
-
+3. [Contribute] (#contribute)
 ## Command List<a name="command-list"></a>
 
-```
-.help               - Shows this message
-.ping               - Latency delay of the bot
-.cd <directory>     - Change Directory
-.ls                 - List Directory
-.export <file>      - Export File into link
-.upload <link>      - Upload File from link
-.cmd <cmd>          - Execute CMD Command
-.run <file>         - Run a File
-.ss                 - Take a Screenshot of the first monitor
-.blue               - Sends a bluescreen ;)
-.start              - Adds the bot to the startup directory
-.exit               - Closes the connection to the bot
-.reload             - Reloads the connection to the bot
-.volumeup           - Increase the system volume
-.volumedown         - Decrease the system volume
-.admincheck         - Check admin privileges
-.location           - Get location information
-.clipboard          - Get clipboard content
-.wallpaper          - Change wallpaper
-.export             - Export file into link
-.upload             - Upload file from link
-.shell              - Execute shell command
-.run                - Run command
-.cd                 - Change directory
-.input              - Send keystrokes
-.type               - Type text
-.say                - Text to speech
-.message            - Display message box
-.mouse              - Display mouse grid
-```
+**Command**                            | **Description**
+---------------------------------------|-----------------------------------
+[.help](#help)                         | Shows this message
+[.ping](#ping)                         | Latency delay of the bot
+[.cd `<directory>`](#change-directory) | Change Directory
+[.ls](#list-directory)                 | List Directory
+[.export `<file>`](#export-file-into-link) | Export File into link
+[.upload `<link>`](#upload-file-from-link) | Upload File from link
+[.cmd `<cmd>`](#execute-cmd-command)   | Execute CMD Command
+[.run `<file>`](#run-a-file)           | Run a File
+[.ss](#take-a-screenshot-of-the-first-monitor) | Take a Screenshot of the first monitor
+[.blue](#send-a-bluescreen)            | Sends a bluescreen ;)
+[.start](#add-the-bot-to-the-startup-directory) | Adds the bot to the startup directory
+[.exit](#close-the-connection-to-the-bot) | Closes the connection to the bot
+[.reload](#reload-the-connection-to-the-bot) | Reloads the connection to the bot
+[.volumeup](#increase-the-volume)      | Increase the system volume
+[.volumedown](#decrease-the-volume)    | Decrease the system volume
+[.admincheck](#check-admin-privileges) | Check admin privileges
+[.location](#get-location-information) | Get location information
+[.clipboard](#get-clipboard-content)   | Get clipboard content
+[.wallpaper `<image_file>`](#change-wallpaper)       | Change wallpaper
+[.shell](#execute-shell-command)       | Execute shell command
+[.input](#send-keystrokes)             | Send keystrokes
+[.type](#type-text)                    | Type text
+[.say](#text-to-speech)                | Text to speech
+[⚠.message⚠](#display-message-box)       | Display message box (WIP)
+[⚠.mouse⚠](#display-mouse-grid)          | Display mouse grid (WIP)
 
 ## Modules<a name="modules"></a>
 
@@ -397,3 +364,62 @@ Display a grid on the screen to help locate the mouse pointer.
 **Note:** The `large` argument specifies the size of
 
  the grid (`large`, `medium`, `small`, `tiny`).
+
+# Contribute - How? <a name="contribute"></a>
+
+I welcome contributions from the community to enhance and improve this project. If you're interested in contributing, follow these steps:
+
+## Getting Started
+
+1. **Fork the Repository**: Start by forking the project repository to your GitHub account. This will create a copy of the project under your account.
+
+2. **Clone the Repository**: Clone the forked repository to your local machine using the following command:
+   ```bash
+   git clone https://github.com/your-username/repository.git
+   ```
+
+3. **Create a Branch**: Create a new branch for your changes. This helps in isolating your work from the main codebase.
+   ```bash
+   git checkout -b feature-name
+   ```
+
+4. **Make Changes**:
+   - Make a Discord bot
+   - Make it admin and give it all permissions
+   - Invite the Discord bot into your Server
+   - Make a new File called ```Settings.py``` in the same directory as main.py
+   - add following code:
+      ```python
+      bot_token ="<INSERT YOUR BOT TOKEN>"
+      guild_id = <ID OF YOUR DISCORD-SERVER>
+      ```
+   - Implement your changes while adhering to best coding practices and using common sense. Write clear and concise code that follows the existing style and structure.
+
+6. **Test Your Changes**: Ensure that your changes work as expected and do not introduce any new issues. If they do its not bad its just... difficult.
+
+## Submitting Changes
+
+6. **Commit Changes**: Once you are satisfied with your changes, commit them with a clear and descriptive commit message.
+   ```bash
+   git commit -m "Add feature: your feature name"
+   ```
+
+7. **Push Changes**: Push your changes to your forked repository on GitHub.
+   ```bash
+   git push origin feature-name
+   ```
+
+8. **Create a Pull Request (PR)**: Open a pull request from your forked repository to the main project repository. Provide a detailed description of your changes, and our team will review it.
+
+## Code Guidelines
+
+When contributing, please adhere to the following guidelines:
+
+- Follow best coding practices relevant to the programming language used.
+- Write clear and meaningful commit messages.
+- Keep your codebase well-documented.
+- Ensure your changes do not break existing functionality.
+- Use common sense to make decisions that contribute to the overall improvement of the project.
+
+Thank you for considering contributing to our project! Your efforts help make this project better for everyone.
+ 
