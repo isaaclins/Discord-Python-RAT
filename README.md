@@ -16,7 +16,7 @@ The Discord Python RAT (Remote Administration Tool) is a project designed to pro
 
 1. [Command List](#command-list)
 2. [Modules](#modules)
-3. [Contribute] (#contribute)
+3. [Contribute](#contribute)
 ## Command List<a name="command-list"></a>
 
 **Command**                            | **Description**
