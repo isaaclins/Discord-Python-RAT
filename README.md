@@ -27,8 +27,6 @@ The Discord Python RAT (Remote Administration Tool) is a project designed to pro
 [.ping](#ping)                         | Latency delay of the bot
 [.cd `<directory>`](#change-directory) | Change Directory
 [.ls](#list-directory)                 | List Directory
-[.export `<file>`](#export-file-into-link) | Export File into link
-[.upload `<link>`](#upload-file-from-link) | Upload File from link
 [.cmd `<cmd>`](#execute-cmd-command)   | Execute CMD Command
 [.run `<file>`](#run-a-file)           | Run a File
 [.ss](#take-a-screenshot-of-the-first-monitor) | Take a Screenshot of the first monitor
@@ -48,6 +46,8 @@ The Discord Python RAT (Remote Administration Tool) is a project designed to pro
 [.say](#text-to-speech)                | Text to speech
 [⚠.message⚠](#display-message-box)       | Display message box (WIP)
 [⚠.mouse⚠](#display-mouse-grid)          | Display mouse grid (WIP)
+[⚠.export⚠ `<file_directory>`](#export-file-into-link) | Export File into link (WIP)
+[⚠.upload⚠ `<link>`](#upload-file-from-link) | Upload File from link (WIP)
 
 ## Modules<a name="modules"></a>
 
@@ -126,29 +126,7 @@ file1.txt
 file2.doc
 ```
 
-### .export \<file\><a name="export-file-into-link"></a>
 
-Export a file and provide a link.
-
-**Example:**
-```
-YOU>.export example.txt
-CLIENT>
-Export
-https://example.com/file.txt
-```
-
-### .upload \<link\><a name="upload-file-from-link"></a>
-
-Upload a file from a provided link.
-
-**Example:**
-```
-YOU>.upload https://example.com/file.txt
-CLIENT>
-Uploaded file in current directory:
-C:/example/directory/example.txt
-```
 
 ### .cmd \<cmd\><a name="execute-cmd-command"></a>
 
@@ -366,6 +344,30 @@ Display a grid on the screen to help locate the mouse pointer.
 **Note:** The `large` argument specifies the size of
 
  the grid (`large`, `medium`, `small`, `tiny`).
+
+ ### .export \<file\><a name="export-file-into-link"></a>
+
+Export a file and provide a link.
+
+**Example:**
+```
+YOU>.export example.txt
+CLIENT>
+Export
+https://example.com/file.txt
+```
+
+### .upload \<link\><a name="upload-file-from-link"></a>
+
+Upload a file from a provided link.
+
+**Example:**
+```
+YOU>.upload https://example.com/file.txt
+CLIENT>
+Uploaded file in current directory:
+C:/example/directory/example.txt
+```
 
 # Contribute - How? <a name="contribute"></a>
 
