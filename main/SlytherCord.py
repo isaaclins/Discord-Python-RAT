@@ -25,8 +25,6 @@ from comtypes import CLSCTX_ALL
 from ctypes import cast, POINTER
 
 
-guild_id=123
-bot_token=456
 global embedMessageWhenStarted
 
 tokens = []
