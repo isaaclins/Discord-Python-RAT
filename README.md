@@ -1,8 +1,9 @@
 <hr>
 <div align="center">
-  <img height="100%" src="https://github.com/isaaclins/Discord_Python_RAT/assets/104733575/72a97df7-993a-4e1b-a5fe-b605a21bb410"  />
+  <img height="100%" src="https://github.com/isaaclins/Discord_Python_RAT/assets/104733575/c834e217-0f33-4995-9ba6-4ee9c7686fdb"  />
 </div>
 <hr>
+
 
 
 
